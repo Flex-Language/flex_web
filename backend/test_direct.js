@@ -8,12 +8,12 @@ const path = require('path');
 const fs = require('fs');
 
 // Create a simple Flex program that uses input
-const testCode = `
-print("This is a test of the input handling system.")
-print("Please enter your name:")
-name = da5l()
-print("Hello, {name}! Nice to meet you.")
-`;
+// const testCode = `
+// print("This is a test of the input handling system.")
+// print("Please enter your name:")
+// name = da5l()
+// print("Hello, {name}! Nice to meet you.")
+// `;
 
 // Write the test code to a file
 const testFilePath = path.join(__dirname, 'temp', 'direct_test.lx');

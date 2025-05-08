@@ -22,8 +22,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Set trust proxy for proper IP handling behind a reverse proxy
-app.set('trust proxy', true);
+// Disable trust proxy since we're running as a direct server
+app.set('trust proxy', false);
 
 // Create HTTP server
 const server = http.createServer(app);
@@ -39,7 +39,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "ws:", "wss:"],
+      connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "192.168.1.94:*", "*.mikawi.org", "ws:", "wss:", "*"],
       fontSrc: ["'self'", "https:", "data:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
@@ -50,13 +50,18 @@ app.use(helmet({
 })); // Set various HTTP headers for security
 app.use(xss()); // Sanitize user input
 
-// Rate limiting to prevent abuse
+// Rate limiting disabled due to configuration issues
+/* 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later'
+  message: 'Too many requests from this IP, please try again later',
+  legacyHeaders: false,
+  standardHeaders: 'draft-7',
+  trustProxy: false
 });
 app.use('/api/', limiter);
+*/
 
 // Configure logger
 const logger = winston.createLogger({
@@ -79,9 +84,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // Middleware
-// Example CORS configuration 
+// Allow CORS from any origin for development
 app.use(cors({
-  origin: ['https://flex.mikawi.org', 'http://192.168.1.94:3000']
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -883,6 +890,6 @@ function broadcastInputRequest(executionId) {
 }
 
 // Start the server
-server.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  logger.info(`Server is running on all interfaces at port ${PORT}`);
 });

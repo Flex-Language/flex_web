@@ -1,0 +1,10 @@
+// Server initialization file
+// This file contains a simple Flex program that doesn't require any user input
+// It's used for initializing the web server
+
+x = 10
+y = 20
+result = x + y
+
+print("Server initialization complete")
+print("System ready: {x} + {y} = {result}")
