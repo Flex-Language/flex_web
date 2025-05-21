@@ -1,0 +1,57 @@
+/* Custom styles for input notification */
+.input-notification {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107;
+    border-radius: 4px;
+    color: #856404;
+    animation: pulse 2s infinite;
+}
+
+.info-message {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #d1ecf1;
+    border-left: 5px solid #17a2b8;
+    border-radius: 4px;
+    color: #0c5460;
+}
+
+.warning-message {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff3cd;
+    border-left: 5px solid #ffc107;
+    border-radius: 4px;
+    color: #856404;
+}
+
+/* Pulsing animation for input requests */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+/* Input field highlight enhancement */
+.input-container.highlight {
+    border: 2px solid #ffc107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    animation: pulse 2s infinite;
+}
+
+/* Additional style for scan function input */
+#input-status.waiting:after {
+    content: " (scan function)";
+    color: #dc3545;
+    font-weight: bold;
+}

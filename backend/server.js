@@ -182,17 +182,21 @@ wss.on('connection', (ws, req) => {
             logger.info(`Received input for execution ${executionId}: "${input}"`);
             execution.waitingForInput = false;
             
-            // Send the input to the Python process
-            try {
-              execution.pyProcess.stdin.write(input + '\n');
-              logger.info(`Sent input to Python process for execution ${executionId}`);
-              
-              // Send immediate acknowledgment to client that input was processed
-              ws.send(JSON.stringify({ 
-                type: 'input_processed',
-                executionId: executionId,
-                timestamp: Date.now()
-              }));
+                      // Send the input to the Python process
+          try {
+            execution.pyProcess.stdin.write(input + '\n');
+            logger.info(`Sent input to Python process for execution ${executionId}`);
+            
+            // Update execution state - back to running after input
+            execution.state = 'running';
+            
+            // Send immediate acknowledgment to client that input was processed
+            ws.send(JSON.stringify({ 
+              type: 'input_processed',
+              executionId: executionId,
+              timestamp: Date.now(),
+              status: execution.state
+            }));
               
               // Resume the timeout
               if (typeof execution.startTimeout === 'function') {
@@ -223,7 +227,51 @@ wss.on('connection', (ws, req) => {
         
         if (executionId && activeExecutions.has(executionId)) {
           logger.info(`Client ${clientId} requested to stop execution ${executionId}`);
+          
+          // Update execution state before cleanup
+          const execution = activeExecutions.get(executionId);
+          execution.state = 'stopped';
+          
+          // Notify client about the state change
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({
+              type: 'execution_status',
+              executionId: executionId,
+              status: 'stopped'
+            }));
+          }
+          
           cleanupExecution(executionId);
+        }
+      } else if (data.type === 'check_execution_status') {
+        // Check and report execution status
+        const executionId = data.executionId;
+        
+        if (executionId) {
+          if (activeExecutions.has(executionId)) {
+            // Execution is still active
+            const execution = activeExecutions.get(executionId);
+            logger.info(`Reporting execution status for ${executionId}: ${execution.state}`);
+            
+            // Send the current status
+            ws.send(JSON.stringify({
+              type: 'execution_status',
+              executionId: executionId,
+              status: execution.state,
+              waitingForInput: execution.waitingForInput
+            }));
+            
+            // Register this client with the execution
+            execution.clientId = clientId;
+          } else {
+            // Execution not found - assume it completed or was never started
+            logger.info(`Execution ${executionId} not found, reporting as completed`);
+            ws.send(JSON.stringify({
+              type: 'execution_status',
+              executionId: executionId,
+              status: 'completed'
+            }));
+          }
         }
       } else if (data.type === 'ping') {
         // Respond to client pings
@@ -317,7 +365,8 @@ async function executeFlexCode(code) {
       waitingForInput: false,
       clientId: null,
       timeoutStartTime: Date.now(),
-      pausedTimeRemaining: timeoutDuration
+      pausedTimeRemaining: timeoutDuration,
+      state: 'running' // Add execution state tracking
     };
     
     // Store in active executions
@@ -376,11 +425,19 @@ async function executeFlexCode(code) {
       const isInputRequest = 
         message.trim() === '__FLEX_INPUT_REQUEST__' || 
         message.includes('__FLEX_INPUT_REQUEST__') ||
-        message.includes('Waiting for input'); // Additional fallback check
+        message.includes('Waiting for input') ||
+        message.includes('scan()') ||
+        message.includes('da5l()'); // Additional checks for scan function
         
       if (isInputRequest) {
         execution.waitingForInput = true;
-        logger.info(`Input request detected for execution ${executionId}`);
+        execution.state = 'waiting_input';
+        // Add a prompt field to indicate this is a scan() call if detected
+        if (message.includes('scan()') || message.includes('input()') || message.includes('da5l()')) {
+            execution.inputPrompt = 'Input required for scan() function';
+            logger.info(`Scan function input request detected for execution ${executionId}`);
+        }
+        logger.info(`Input request detected for execution ${executionId}, state changed to waiting_input`);
         
         // Add timestamp for debugging
         execution.inputRequestTime = Date.now();
@@ -415,8 +472,14 @@ async function executeFlexCode(code) {
         if (execution.clientId && clients.has(execution.clientId)) {
           const ws = clients.get(execution.clientId);
           if (ws.readyState === WebSocket.OPEN) {
-            // Send multiple times to ensure delivery with exponential backoff
-            sendInputRequestToClient(ws, executionId, 0);
+            try {
+              // Send multiple times to ensure delivery with exponential backoff
+              sendInputRequestToClient(ws, executionId, 0);
+            } catch (error) {
+              logger.error(`Error sending input request to client: ${error.message}`);
+              // Try to broadcast as fallback
+              broadcastInputRequest(executionId);
+            }
           } else {
             logger.error(`Client ${execution.clientId} WebSocket not open`);
             // Try to broadcast as fallback
@@ -479,11 +542,21 @@ async function executeFlexCode(code) {
       
       logger.info(`Python process exited with code ${code} for execution ${executionId}`);
       
+      // Update execution state
+      if (activeExecutions.has(executionId)) {
+        const execution = activeExecutions.get(executionId);
+        execution.state = code === 0 ? 'completed' : 'error';
+      }
+      
       // Notify client that execution is complete
       if (execution.clientId && clients.has(execution.clientId)) {
         const ws = clients.get(execution.clientId);
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'execution_complete' }));
+          ws.send(JSON.stringify({ 
+            type: 'execution_complete',
+            status: code === 0 ? 'completed' : 'error',
+            exitCode: code
+          }));
         }
       }
       
@@ -626,6 +699,15 @@ app.post('/api/execute', async (req, res) => {
       return res.status(504).json({ error: 'Code execution timed out' });
     }
     
+    // Add execution state to the response if available
+    if (result.executionId && activeExecutions.has(result.executionId)) {
+      const execution = activeExecutions.get(result.executionId);
+      result.status = execution.state;
+    } else if (result.executionId) {
+      // If execution ID exists but not in active executions, it completed quickly
+      result.status = 'completed';
+    }
+    
     // Filter input request tokens from output if needed
     if (result.output && typeof result.output === 'string') {
       // Filter out any input request tokens from the output
@@ -689,6 +771,10 @@ app.post('/api/input', async (req, res) => {
       execution.pyProcess.stdin.write(input + '\n');
       execution.waitingForInput = false;
       
+      // Update execution state - back to running after input
+      execution.state = 'running';
+      logger.info(`Updated execution state to 'running' for ${executionId}`);
+      
       // Resume the timeout
       if (typeof execution.startTimeout === 'function') {
         execution.startTimeout();
@@ -699,6 +785,7 @@ app.post('/api/input', async (req, res) => {
       
       return res.json({ 
         status: 'success',
+        state: 'running',
         message: 'Input processed successfully'
       });
     } catch (processError) {
@@ -829,7 +916,8 @@ app.get('/api/input-status', (req, res) => {
           id,
           waitingSince: execution.inputRequestTime || Date.now(),
           hasClient: !!execution.clientId,
-          clientId: execution.clientId || null
+          clientId: execution.clientId || null,
+          state: execution.state || 'waiting_input'
         });
       }
     });
@@ -847,26 +935,83 @@ app.get('/api/input-status', (req, res) => {
   }
 });
 
+// API endpoint to check execution status
+app.get('/api/execution-status/:id', (req, res) => {
+  const executionId = req.params.id;
+  
+  if (!executionId) {
+    return res.status(400).json({ 
+      status: 'error',
+      error: 'Execution ID is required' 
+    });
+  }
+  
+  if (activeExecutions.has(executionId)) {
+    const execution = activeExecutions.get(executionId);
+    return res.json({
+      status: 'success',
+      executionId: executionId,
+      state: execution.state,
+      waitingForInput: execution.waitingForInput
+    });
+  } else {
+    // Execution not found - assume it completed or was never started
+    return res.json({
+      status: 'success',
+      executionId: executionId,
+      state: 'completed'
+    });
+  }
+});
+
 // Function to send input request to client with retries
 function sendInputRequestToClient(ws, executionId, attempt) {
   try {
+    // Get execution state if available
+    let state = 'waiting_input';
+    if (activeExecutions.has(executionId)) {
+      const execution = activeExecutions.get(executionId);
+      state = execution.state || 'waiting_input';
+    }
+    
+    // Skip if execution has completed
+    if (isExecutionCompleted(executionId)) {
+      logger.warn(`Skipping input request: execution ${executionId} has completed`);
+      return;
+    }
+    
+    // Get any prompt that might be available
+    let prompt = 'Input required';
+    if (activeExecutions.has(executionId)) {
+      const execution = activeExecutions.get(executionId);
+      prompt = execution.inputPrompt || 'Input required';
+    }
+    
     // Send with a priority flag to ensure it's processed correctly
-    ws.send(JSON.stringify({ 
+    const success = safelySendWebSocketMessage(ws, { 
       type: 'input_request',
       priority: true,
       executionId: executionId,
       timestamp: Date.now(),
-      attempt: attempt
-    }));
+      attempt: attempt,
+      status: state,
+      prompt: prompt
+    }, executionId);
     
-    logger.info(`Sent input_request to client for execution ${executionId} (attempt ${attempt})`);
+    if (success) {
+      logger.info(`Sent input_request to client for execution ${executionId} (attempt ${attempt})`);
+    } else {
+      // Mark execution for retry via HTTP polling
+      if (activeExecutions.has(executionId)) {
+        const execution = activeExecutions.get(executionId);
+        execution.needsStatusCheck = true;
+      }
+    }
     
     // Retry a few times with exponential backoff to ensure delivery
-    if (attempt < 2) {
+    if (attempt < 2 && !isExecutionCompleted(executionId)) {
       setTimeout(() => {
-        if (ws.readyState === WebSocket.OPEN) {
-          sendInputRequestToClient(ws, executionId, attempt + 1);
-        }
+        sendInputRequestToClient(ws, executionId, attempt + 1);
       }, 1000 * Math.pow(2, attempt)); // 1s, 2s, 4s backoff
     }
   } catch (err) {
@@ -877,16 +1022,62 @@ function sendInputRequestToClient(ws, executionId, attempt) {
 // Function to broadcast input request to all clients
 function broadcastInputRequest(executionId) {
   logger.warn(`No client connected for execution ${executionId}, broadcasting input request`);
+  // Get execution state if available
+  let state = 'waiting_input';
+  if (activeExecutions.has(executionId)) {
+    const execution = activeExecutions.get(executionId);
+    state = execution.state || 'waiting_input';
+  }
+  
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({ 
         type: 'input_request',
         executionId: executionId,
         broadcast: true,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        status: state
       }));
     }
   });
+}
+
+// Function to check if execution has completed
+function isExecutionCompleted(executionId) {
+  // If execution is not in the active executions map, consider it completed
+  if (!activeExecutions.has(executionId)) {
+    return true;
+  }
+  
+  // Check if the execution is in a completed state
+  const execution = activeExecutions.get(executionId);
+  if (execution.state === 'completed' || execution.state === 'error' || execution.state === 'stopped') {
+    return true;
+  }
+  
+  // Check if the process has exited
+  if (execution.pyProcess && execution.pyProcess.exitCode !== null) {
+    return true;
+  }
+  
+  // Execution is still running
+  return false;
+}
+
+// Function to safely send messages over WebSocket with error handling
+function safelySendWebSocketMessage(ws, message, executionId = null) {
+  try {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(message));
+      return true;
+    } else {
+      logger.warn(`Cannot send WebSocket message: socket not open ${executionId ? `(executionId: ${executionId})` : ''}`);
+      return false;
+    }
+  } catch (wsError) {
+    logger.error(`Failed to send WebSocket message: ${wsError.message}`);
+    return false;
+  }
 }
 
 // Start the server

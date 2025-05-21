@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let awaitingInput = false;
     let programRunning = false;
     let executionId = null;
+    let executionState = 'idle'; // Possible states: 'idle', 'running', 'completed', 'error', 'stopped'
 
     // Preload examples and documentation
     console.log('Preloading examples and documentation...');
@@ -171,11 +172,32 @@ for (i = 0; i < 5; i++) {
             clearInterval(window.pingInterval);
         }
         
+        // Clear any input polling interval
+        if (window.inputPollInterval) {
+            clearInterval(window.inputPollInterval);
+        }
+        
+        // Track connection attempts to prevent flooding the output with reconnection messages
+        if (!window.wsReconnectCount) {
+            window.wsReconnectCount = 0;
+        }
+        
         socket = new WebSocket(wsUrl);
         
         socket.onopen = function() {
             console.log('WebSocket connection established');
-            appendToOutput('<div class="system-message">WebSocket connected</div>');
+            
+            // Only show connection message on first connect or after multiple failed attempts
+            if (window.wsReconnectCount === 0 || window.wsReconnectCount > 2) {
+                // Add connection message to output only if it's not a background reconnect
+                if (!window.silentReconnect) {
+                    appendToOutput('<div class="system-message websocket-status">WebSocket connected</div>');
+                }
+            }
+            
+            // Reset reconnect count on successful connection
+            window.wsReconnectCount = 0;
+            window.silentReconnect = false;
             
             // Set up heartbeat ping
             window.pingInterval = setInterval(() => {
@@ -192,8 +214,18 @@ for (i = 0; i < 5; i++) {
                 }
             }, 25000); // Ping every 25 seconds (server checks every 30s)
             
-            // If there's an active execution, register it
-            if (executionId && programRunning) {
+            // If there's an active execution or we need to check status, handle it
+            if (window.checkExecutionOnReconnect && window.lastExecutionId) {
+                console.log(`Checking status of execution ${window.lastExecutionId} after reconnect`);
+                socket.send(JSON.stringify({ 
+                    type: 'check_execution_status', 
+                    executionId: window.lastExecutionId 
+                }));
+                
+                // Reset the check flag
+                window.checkExecutionOnReconnect = false;
+            }
+            else if (executionId && programRunning) {
                 console.log(`Re-registering execution ${executionId} with new WebSocket connection`);
                 socket.send(JSON.stringify({ 
                     type: 'register_execution', 
@@ -216,6 +248,15 @@ for (i = 0; i < 5; i++) {
                 if (data.type === 'input_request') {
                     console.log('Input request received', data);
                     
+                    // Clear any error messages about connection issues when input is requested
+                    const errorMessages = document.querySelectorAll('.alert-danger');
+                    errorMessages.forEach(msg => {
+                        if (msg.textContent.includes('connecting to server') || 
+                            msg.textContent.includes('timed out')) {
+                            msg.remove();
+                        }
+                    });
+                    
                     // Set the current execution ID
                     executionId = data.executionId;
                     
@@ -230,10 +271,10 @@ for (i = 0; i < 5; i++) {
                     
                     // Update the input status
                     awaitingInput = true;
-                    updateInputStatus(true, data.prompt || 'Input required');
+                    updateInputStatus(true, data.prompt || 'Input required for scan() function');
                     
                     // Add toast notification for input request
-                    showToast('Input Required', 'The program is waiting for input', 'info');
+                    showToast('Input Required', 'The program is waiting for input from scan() function', 'info');
                     
                     // Focus the input field after a small delay to ensure it's visible
                     setTimeout(() => {
@@ -260,14 +301,101 @@ for (i = 0; i < 5; i++) {
                     awaitingInput = false;
                     updateInputStatus(false);
                     
+                    // Update execution state
+                    executionState = 'completed';
+                    
                     // Reset the run button text back to "Run"
                     document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
                     
                     // Remove highlight from input area
                     document.querySelector('.input-container').classList.remove('highlight');
                     
+                    // Clear any safety timeout
+                    if (window.executionSafetyTimeout) {
+                        clearTimeout(window.executionSafetyTimeout);
+                    }
+                    
+                    // Clean up WebSocket status messages after successful execution
+                    cleanupWebSocketMessages();
+                    
+                    // Clean up any error messages
+                    const outputArea = document.getElementById('output-area');
+                    const errorMsgs = outputArea.querySelectorAll('.alert-danger, #execution-error-message');
+                    if (errorMsgs.length > 0) {
+                        // Remove any error messages about connection issues or timeouts
+                        errorMsgs.forEach(msg => {
+                            if (msg.textContent.includes('connecting to server') || 
+                                msg.textContent.includes('timed out')) {
+                                msg.remove();
+                            }
+                        });
+                    }
+                    
                     // Add completion message
                     appendToOutput('<div class="execution-complete">Execution completed</div>');
+                } else if (data.type === 'execution_error') {
+                    console.log('Execution error notification received:', data.content);
+                    programRunning = false;
+                    awaitingInput = false;
+                    updateInputStatus(false);
+                    
+                    // Update execution state
+                    executionState = 'error';
+                    
+                    // Reset the run button text back to "Run"
+                    document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                    
+                    // Remove highlight from input area
+                    document.querySelector('.input-container').classList.remove('highlight');
+                    
+                    // Clear any safety timeout
+                    if (window.executionSafetyTimeout) {
+                        clearTimeout(window.executionSafetyTimeout);
+                    }
+                    
+                    // Add error message
+                    appendToOutput(`<div class="output-error">Execution error: ${data.content || 'Unknown error'}</div>`);
+                } else if (data.type === 'execution_status') {
+                    // Handle execution status updates
+                    console.log('Execution status update received:', data);
+                    
+                    // Clear any error message if execution is still running or completed successfully
+                    const errorMsg = document.getElementById('execution-error-message');
+                    if (errorMsg && (data.status === 'running' || data.status === 'completed')) {
+                        console.log('Clearing error message due to execution status update');
+                        errorMsg.remove();
+                    }
+                    
+                    if (data.status === 'running') {
+                        programRunning = true;
+                        executionState = 'running';
+                        document.getElementById('run-button').innerHTML = '<i class="bi bi-stop-fill"></i> Stop';
+                    } else if (data.status === 'completed' || data.status === 'error' || data.status === 'stopped') {
+                        programRunning = false;
+                        executionState = data.status;
+                        document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                        
+                        // Clean up any error messages if execution completed successfully
+                        if (data.status === 'completed') {
+                            // Replace any error messages about execution status with completion message
+                            const outputArea = document.getElementById('output-area');
+                            const errorMsgs = outputArea.querySelectorAll('.alert-danger');
+                            if (errorMsgs.length > 0) {
+                                // If there are error messages, replace the last one with a success message
+                                errorMsgs.forEach(msg => {
+                                    if (msg.textContent.includes('connecting to server') || 
+                                        msg.textContent.includes('timed out')) {
+                                        msg.remove();
+                                    }
+                                });
+                            }
+                            
+                            // Add status message if not already shown
+                            if (!document.querySelector('.execution-complete:last-child')) {
+                                appendToOutput('<div class="execution-complete">Execution completed</div>');
+                            }
+                        }
+                    }
                 } else if (data.type === 'output') {
                     // Check for both data and content fields
                     const outputContent = data.data || data.content;
@@ -276,6 +404,29 @@ for (i = 0; i < 5; i++) {
                     }
                 } else if (data.type === 'error') {
                     appendToOutput(`<span class="output-error">${data.content}</span>`);
+                    
+                    // If this is an execution-related error, reset the execution state
+                    if (data.content && (
+                        data.content.includes('execution') || 
+                        data.content.includes('program') || 
+                        data.content.includes('process'))
+                    ) {
+                        console.log('Execution error detected, resetting UI state');
+                        programRunning = false;
+                        awaitingInput = false;
+                        updateInputStatus(false);
+                        
+                        // Update execution state
+                        executionState = 'error';
+                        
+                        // Reset the run button text back to "Run"
+                        document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                        
+                        // Clear any safety timeout
+                        if (window.executionSafetyTimeout) {
+                            clearTimeout(window.executionSafetyTimeout);
+                        }
+                    }
                 }
             } catch (e) {
                 console.error('Error parsing WebSocket message:', e);
@@ -291,8 +442,102 @@ for (i = 0; i < 5; i++) {
                 window.pingInterval = null;
             }
             
+            // Increment reconnect counter
+            window.wsReconnectCount = (window.wsReconnectCount || 0) + 1;
+            
+            // Store execution state before reconnect
+            if (programRunning && executionState === 'running') {
+                // Save the current execution ID to check on reconnect
+                window.lastExecutionId = executionId;
+                window.checkExecutionOnReconnect = true;
+                
+                // Add a message to the output area - only show once
+                if (window.wsReconnectCount <= 1) {
+                    appendToOutput('<div class="output-error websocket-error">WebSocket connection lost. Will check execution status on reconnect...</div>');
+                }
+            } else if (programRunning) {
+                // If we were in any other state, reset completely
+                programRunning = false;
+                awaitingInput = false;
+                updateInputStatus(false);
+                executionState = 'stopped';
+                
+                // Reset the run button back to "Run"
+                document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                
+                // Add a message to the output area - only show once
+                if (window.wsReconnectCount <= 1) {
+                    appendToOutput('<div class="output-error websocket-error">WebSocket connection lost. Execution may have been interrupted.</div>');
+                }
+            }
+            
+            // For frequent reconnects, don't spam the console or output
+            const reconnectDelay = Math.min(3000 * Math.pow(1.5, Math.min(window.wsReconnectCount - 1, 5)), 30000);
+            
+            // Switch to HTTP polling mechanism for input if WebSocket is unreliable
+            if (window.wsReconnectCount >= 2) {
+                console.log('WebSocket connection unreliable, switching to HTTP polling for input');
+                appendToOutput('<div class="info-message">Switched to HTTP polling: Using alternative connection method.</div>');
+                
+                // Set up polling for input status via HTTP
+                if (!window.inputPollInterval) {
+                    window.inputPollInterval = setInterval(() => {
+                        if (programRunning && executionId) {
+                            // Poll server for input status
+                            console.log('Polling for input status via HTTP');
+                            fetch('/api/input-status')
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.waitingExecutions && data.waitingExecutions.length > 0) {
+                                        // Check if our execution is waiting for input
+                                        const ourExecution = data.waitingExecutions.find(
+                                            exec => exec.id === executionId
+                                        );
+                                        
+                                        if (ourExecution && !awaitingInput) {
+                                            console.log('Detected execution waiting for input via HTTP poll');
+                                            // Update UI to show input is needed
+                                            awaitingInput = true;
+                                            updateInputStatus(true, 'Input required (HTTP polling)');
+                                            appendToOutput('<div class="input-notification"><strong>⚠️ Input required for scan() function</strong> - please enter a value below</div>');
+                                        }
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error polling input status:', error);
+                                });
+                        }
+                    }, 2000); // Poll every 2 seconds
+                }
+            }
+            
+            // If we've tried to reconnect multiple times, show a more subtle message
+            if (window.wsReconnectCount > 3 && window.wsReconnectCount % 3 === 0) {
+                console.log(`Multiple reconnection attempts (${window.wsReconnectCount}). Will continue trying in background.`);
+                
+                // Remove any existing connection status messages to avoid clutter
+                document.querySelectorAll('.websocket-status, .websocket-error').forEach(el => {
+                    // Keep only the most recent message
+                    if (el !== document.querySelector('.websocket-error:last-child') && 
+                        el !== document.querySelector('.websocket-status:last-child')) {
+                        el.remove();
+                    }
+                });
+                
+                // Add a subtle message about reconnection attempts
+                appendToOutput(`<div class="system-message websocket-status">Attempting to reconnect... (try ${window.wsReconnectCount})</div>`);
+            }
+            
+            // For subsequent reconnects, don't show messages in the output
+            if (window.wsReconnectCount > 1) {
+                window.silentReconnect = true;
+            }
+            
+            // Add connection issues message
+            appendToOutput('<div class="warning-message">Connection issues detected. Switched to fallback connection mode.</div>');
+            
             // Try to reconnect after a delay
-            setTimeout(setupWebSocket, 3000);
+            setTimeout(setupWebSocket, reconnectDelay);
         };
         
         socket.onerror = function(error) {
@@ -317,12 +562,29 @@ for (i = 0; i < 5; i++) {
             programRunning = false;
             awaitingInput = false;
             updateInputStatus(false);
+            
+            // Update execution state
+            executionState = 'stopped';
+            
+            // Clear any safety timeout
+            if (window.executionSafetyTimeout) {
+                clearTimeout(window.executionSafetyTimeout);
+            }
+            
             outputArea.innerHTML += '<div class="output-error">Execution stopped</div>';
+            
+            // Reset the run button text back to "Run"
+            document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+            
             return;
         }
         
         // Save code to local storage
         saveToLocalStorage('flex_code', code);
+        
+        // Reset execution state
+        executionState = 'idle';
+        executionId = null;
         
         // Clear previous output and reset state
         outputArea.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
@@ -390,25 +652,71 @@ for (i = 0; i < 5; i++) {
                 // Start long-polling or use WebSocket for input handling if needed
                 if (data.executionId) {
                     executionId = data.executionId;
-                    programRunning = true;
-                    console.log(`Execution started with ID: ${executionId}`);
                     
-                    // Ensure the run button text changes to "Stop"
-                    document.getElementById('run-button').innerHTML = '<i class="bi bi-stop-fill"></i> Stop';
-                    
-                    // If WebSocket is available, register this execution
-                    if (socket && socket.readyState === WebSocket.OPEN) {
-                        console.log(`Registering execution ${executionId} with WebSocket`);
-                        socket.send(JSON.stringify({ 
-                            type: 'register_execution', 
-                            executionId: data.executionId 
-                        }));
+                    // Check if the execution is already completed
+                    if (data.status === 'completed') {
+                        programRunning = false;
+                        executionState = 'completed';
+                        
+                        // Reset the run button text back to "Run"
+                        document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                        
+                        // Add completion message
+                        appendToOutput('<div class="execution-complete">Execution completed</div>');
                     } else {
-                        console.error('WebSocket not connected, cannot register execution');
-                        appendToOutput('<div class="output-error">WebSocket not connected. Input handling may not work properly.</div>');
-                        // Try to reconnect
-                        setupWebSocket();
+                        programRunning = true;
+                        executionState = 'running';
+                        console.log(`Execution started with ID: ${executionId}`);
+                        
+                        // Ensure the run button text changes to "Stop"
+                        document.getElementById('run-button').innerHTML = '<i class="bi bi-stop-fill"></i> Stop';
+                        
+                        // Set a safety timeout in case execution hangs without notification
+                        if (window.executionSafetyTimeout) {
+                            clearTimeout(window.executionSafetyTimeout);
+                        }
+                        
+                        window.executionSafetyTimeout = setTimeout(() => {
+                            // Only reset if we're still showing running for this execution
+                            if (programRunning && executionId) {
+                                console.log(`Safety timeout triggered for execution ${executionId}. Resetting UI state.`);
+                                
+                                programRunning = false;
+                                awaitingInput = false;
+                                updateInputStatus(false);
+                                
+                                // Reset the run button text back to "Run"
+                                document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                                
+                                // Add timeout message
+                                appendToOutput('<div class="output-error">Execution may have timed out. No response received for 5 minutes.</div>');
+                            }
+                        }, 300000); // 5 minute timeout
+                        
+                        // If WebSocket is available, register this execution
+                        if (socket && socket.readyState === WebSocket.OPEN) {
+                            console.log(`Registering execution ${executionId} with WebSocket`);
+                            socket.send(JSON.stringify({ 
+                                type: 'register_execution', 
+                                executionId: data.executionId 
+                            }));
+                        } else {
+                            console.error('WebSocket not connected, cannot register execution');
+                            appendToOutput('<div class="output-error">WebSocket not connected. Input handling may not work properly.</div>');
+                            // Try to reconnect
+                            setupWebSocket();
+                        }
                     }
+                } else {
+                    // If no executionId is returned, the execution was handled synchronously and is now complete
+                    programRunning = false;
+                    executionState = 'completed';
+                    
+                    // Ensure the run button stays as "Run"
+                    document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
+                    
+                    // Add completion message
+                    appendToOutput('<div class="execution-complete">Execution completed</div>');
                 }
             }
         })
@@ -418,14 +726,35 @@ for (i = 0; i < 5; i++) {
             // Remove the spinner
             document.getElementById('output-area').innerHTML = '';
             
-            // Show error message
-            const errorMessage = `<div class="alert alert-danger">
-                <strong>Error connecting to server:</strong> ${error.message || 'Unknown error'}
-                <hr>
-                <small>If this issue persists, please refresh the page or contact support.</small>
-            </div>`;
-            
-            document.getElementById('output-area').innerHTML = errorMessage;
+            // Check if there's a timeout error but execution might still be running
+            if (error.message && error.message.includes('timed out')) {
+                // Create a wrapper div with a special ID so we can update it later
+                const errorMessage = `<div id="execution-error-message" class="alert alert-danger">
+                    <strong>Error connecting to server:</strong> ${error.message || 'Unknown error'}
+                    <hr>
+                    <small>Checking execution status... The program might still be running.</small>
+                </div>`;
+                
+                document.getElementById('output-area').innerHTML = errorMessage;
+                
+                // Try to check execution status via WebSocket if available
+                if (socket && socket.readyState === WebSocket.OPEN && executionId) {
+                    console.log(`Checking execution status for ${executionId} after error`);
+                    socket.send(JSON.stringify({ 
+                        type: 'check_execution_status', 
+                        executionId: executionId 
+                    }));
+                }
+            } else {
+                // Show regular error message
+                const errorMessage = `<div class="alert alert-danger">
+                    <strong>Error connecting to server:</strong> ${error.message || 'Unknown error'}
+                    <hr>
+                    <small>If this issue persists, please refresh the page or contact support.</small>
+                </div>`;
+                
+                document.getElementById('output-area').innerHTML = errorMessage;
+            }
             
             // Re-enable run button
             document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
@@ -496,6 +825,10 @@ for (i = 0; i < 5; i++) {
                 // Reset waiting status
                 awaitingInput = false;
                 updateInputStatus(false);
+                
+                // Reset execution state and button if this is a severe timeout
+                programRunning = false;
+                document.getElementById('run-button').innerHTML = '<i class="bi bi-play-fill"></i> Run';
                 
                 // Attempt to reconnect WebSocket
                 if (socket) {
@@ -663,12 +996,29 @@ for (i = 0; i < 5; i++) {
     // Function to append text to the output area
     function appendToOutput(text) {
         const outputArea = document.getElementById('output-area');
+        
+        // Check if this is a WebSocket status message
+        if (text.includes('class="websocket-status"')) {
+            // Limit the number of WebSocket status messages
+            const existingMessages = outputArea.querySelectorAll('.websocket-status');
+            
+            // If we already have multiple status messages, remove older ones
+            if (existingMessages.length >= 2) {
+                // Keep only the most recent message
+                for (let i = 0; i < existingMessages.length - 1; i++) {
+                    existingMessages[i].remove();
+                }
+            }
+        }
+        
         const lineElement = document.createElement('div');
         lineElement.innerHTML = text;
         outputArea.appendChild(lineElement);
         
         // Scroll to the bottom
         outputArea.scrollTop = outputArea.scrollHeight;
+        
+        return lineElement;
     }
 
     // Clear button functionality
@@ -679,6 +1029,10 @@ for (i = 0; i < 5; i++) {
     // Clear output button functionality
     document.getElementById('clear-output-button').addEventListener('click', function() {
         document.getElementById('output-area').innerHTML = '';
+        
+        // Reset WebSocket connection counters when clearing output
+        window.wsReconnectCount = 0;
+        window.silentReconnect = false;
     });
 
     // Save button functionality
@@ -968,6 +1322,28 @@ for (i = 0; i < 5; i++) {
         }, 5000); // Check every 5 seconds
     }
 
+    // Function to clean up WebSocket status messages
+    function cleanupWebSocketMessages() {
+        // Remove all WebSocket status messages except the most recent one
+        const statusMessages = document.querySelectorAll('.websocket-status');
+        if (statusMessages.length > 1) {
+            // Keep only the most recent message if needed
+            for (let i = 0; i < statusMessages.length - 1; i++) {
+                statusMessages[i].remove();
+            }
+            
+            // If we have a successful connection, remove all status messages
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                statusMessages[statusMessages.length - 1].remove();
+            }
+        }
+        
+        // Also clean up error messages if connection is restored
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            document.querySelectorAll('.websocket-error').forEach(el => el.remove());
+        }
+    }
+    
     // Call this function to start checking
     setupInputStatusCheck();
 }); 
