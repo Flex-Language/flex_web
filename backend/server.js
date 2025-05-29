@@ -39,7 +39,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net", "'unsafe-inline'"],
       styleSrc: ["'self'", "https:", "'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "192.168.1.94:*", "*.mikawi.org", "ws:", "wss:", "*"],
+      connectSrc: ["'self'", "localhost:*", "127.0.0.1:*", "192.168.1.62:*", "*.mikawi.org", "ws:", "wss:", "*"],
       fontSrc: ["'self'", "https:", "data:"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
@@ -338,7 +338,7 @@ async function executeFlexCode(code) {
     // Create a child process to run the Python interpreter
     const pythonPath = process.env.PYTHON_PATH || 'python3';
     // Updated path to main.py in the cloned repository
-    const flexCompilerPath = path.join(__dirname, '..', '..', 'flex_compiler_external');
+    const flexCompilerPath = path.join(__dirname, '..', '..', 'compiler');
     const scriptPath = path.join(flexCompilerPath, 'src', 'main.py');
     
     logger.info(`Spawning Python process: ${pythonPath} -u ${scriptPath} ${filepath}`);
