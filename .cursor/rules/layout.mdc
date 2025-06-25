@@ -1,0 +1,279 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Flex Web Compiler - Project Layout & Documentation
+
+## Project Overview
+A comprehensive web-based IDE and compiler for the Flex programming language with real-time code execution, WebSocket support, and modern UI.
+
+## Project Tree Structure
+
+```
+flex_web/
+├── 📁 backend/                           # Node.js backend server
+│   ├── 📄 bun.lock                      # Bun package lock file
+│   ├── 🚀 direct-server.js             # Direct server implementation (alternative)
+│   ├── 🔧 flex_patch.js                # Flex language patches/modifications
+│   ├── ⚙️ jsconfig.json                # JavaScript configuration
+│   ├── 📦 package-lock.json            # NPM package lock file
+│   ├── 📦 package.json                 # Backend dependencies & scripts
+│   ├── 📖 README.md                    # Backend documentation
+│   ├── 🚀 server_init.lx               # Server initialization script
+│   ├── 🎯 server.js                    # Main Express server with WebSocket support
+│   ├── 🏁 start.js                     # Server startup script
+│   ├── 📁 temp/                        # Temporary files for code execution
+│   └── 🔗 webhook.js                   # GitHub webhook handler
+├── 🚀 deploy-webhook.sh                 # Webhook deployment script
+├── 🚀 deploy.sh                         # Main deployment script with PM2 & Bun
+├── 📁 docs/                             # Documentation files
+│   ├── 📚 DOCUMENTATION.md             # Full project documentation
+│   ├── ⚡ QUICK_REFERENCE.md           # Quick reference guide
+│   ├── 📖 README.md                    # Docs overview
+│   └── 🎓 TUTORIAL.md                  # Step-by-step tutorial
+├── ⚙️ ecosystem.config.js              # PM2 process manager configuration
+├── 📁 frontend/                         # Web frontend (static files)
+│   ├── 📁 css/                         # Stylesheets
+│   │   ├── 🎨 style.css               # Legacy styles
+│   │   └── 🎨 styles.css              # Main CSS with modern UI
+│   ├── 📁 examples/                    # Flex code examples
+│   │   └── 💡 input_demo.lx           # Demo showing input/output
+│   ├── 🌐 index.html                  # Main HTML with Bootstrap UI
+│   └── 📁 js/                          # JavaScript modules
+│       ├── 🔧 flex-mode.js            # CodeMirror syntax highlighting
+│       └── 🧠 main.js                 # Frontend logic with WebSocket
+├── 📁 logs/                             # Application logs directory
+├── 🛠️ manage.sh                        # Server management script
+├── 📊 monitor.sh                        # System monitoring script
+├── 📦 package-lock.json                 # Root package lock
+├── 📖 README_OPTIMIZED.md               # Optimized documentation
+├── 📖 README.md                         # Main project documentation
+└── 📝 UPDATES.md                        # Project updates log
+```
+
+## File Descriptions
+
+### 🎯 Core Backend Files
+
+**`backend/server.js`** - Main Express server (1086 lines)
+- Express.js server with WebSocket support
+- Real-time code execution with Python subprocess
+- Input/output handling for interactive programs
+- Security middleware (helmet, CORS, rate limiting)
+- File management for temporary code execution
+- PM2 process management integration
+- Comprehensive error handling and logging
+
+**`backend/package.json`** - Backend Dependencies
+- Express.js for web server
+- WebSocket (ws) for real-time communication
+- Python-shell for Flex code execution
+- Security packages (helmet, xss-clean)
+- Process management (PM2)
+- Optimized for HP Z620 workstation
+
+**`backend/webhook.js`** - GitHub Integration
+- Handles GitHub webhook events
+- Automated deployment triggers
+- Repository synchronization
+
+### 🌐 Frontend Files
+
+**`frontend/index.html`** - Main Web Interface (216 lines)
+- Bootstrap 5 responsive UI
+- CodeMirror editor integration
+- Multi-page SPA (Compiler, Examples, Documentation)
+- Real-time input/output handling
+- Keyboard shortcuts panel
+- Mobile-responsive design
+
+**`frontend/js/main.js`** - Frontend Logic (1349 lines)
+- WebSocket connection management
+- Real-time code execution interface
+- Input queue management for interactive programs
+- Local storage for code persistence
+- Code sharing via URL hash
+- Toast notifications and error handling
+- Automatic reconnection with HTTP fallback
+
+**`frontend/js/flex-mode.js`** - Syntax Highlighting
+- Custom CodeMirror mode for Flex language
+- Keyword highlighting and syntax rules
+
+**`frontend/css/styles.css`** - Modern Styling
+- Dark theme with Dracula color scheme
+- Responsive grid layout
+- Custom input/output panels
+- Toast notification styles
+
+### ⚙️ Configuration & Deployment
+
+**`ecosystem.config.js`** - PM2 Configuration
+- Cluster mode with 2 instances
+- Memory optimization (800MB limit)
+- Auto-restart and health monitoring
+- Production environment settings
+- Log management and rotation
+
+**`deploy.sh`** - Deployment Script (95 lines)
+- Bun package manager integration
+- PM2 process management
+- Environment configuration
+- Directory creation and permissions
+- Startup script generation
+
+### 📚 Documentation
+
+**`README.md`** - Main Documentation (220 lines)
+- Complete setup instructions
+- API documentation
+- Feature overview
+- Troubleshooting guide
+- Architecture explanation
+
+**`docs/`** - Comprehensive Documentation
+- Structured documentation files
+- API references and tutorials
+- User guides and examples
+
+## 🔧 Problems Faced & Solutions Implemented
+
+### 1. **Real-time Input/Output Challenge**
+**Problem**: Traditional web interfaces can't handle interactive programs that require user input during execution.
+
+**Solution**: 
+- Implemented WebSocket connection for real-time communication
+- Created input queue system for buffering user inputs
+- Added fallback HTTP polling for unstable connections
+- Custom protocol for input request detection (`__FLEX_INPUT_REQUEST__`)
+
+### 2. **Connection Reliability Issues**
+**Problem**: WebSocket connections can be unstable, causing lost communication during program execution.
+
+**Solution**:
+- Implemented automatic reconnection with exponential backoff
+- HTTP polling fallback when WebSocket fails
+- Execution state persistence across reconnections
+- Client registration system for execution tracking
+
+### 3. **Memory Optimization for Limited Resources**
+**Problem**: Running on HP Z620 workstation with limited memory (4GB).
+
+**Solution**:
+- Configured Node.js with `--max-old-space-size=768`
+- PM2 cluster mode with memory limits
+- Automatic cleanup of temporary files
+- Optimized package management with Bun
+
+### 4. **Security Concerns**
+**Problem**: Allowing arbitrary code execution poses security risks.
+
+**Solution**:
+- Sandboxed execution environment
+- Rate limiting on API endpoints
+- Input sanitization with XSS protection
+- Helmet.js for security headers
+- Temporary file isolation
+
+### 5. **Cross-Platform Deployment**
+**Problem**: Need for consistent deployment across different environments.
+
+**Solution**:
+- Comprehensive deployment script with dependency checks
+- Environment variable configuration
+- PM2 for process management and auto-restart
+- Automated startup script generation
+
+### 6. **User Experience Optimization**
+**Problem**: Users need immediate feedback and intuitive interface.
+
+**Solution**:
+- Real-time syntax highlighting with custom Flex mode
+- Toast notifications for all actions
+- Keyboard shortcuts for power users
+- Code sharing via URL hash
+- Local storage for code persistence
+- Responsive design for mobile devices
+
+## 🔄 Maintenance Guidelines
+
+### When Adding New Files:
+1. Update this layout documentation
+2. Add appropriate emoji and description
+3. Document any new problems/solutions
+4. Update deployment scripts if needed
+
+### When Removing Files:
+1. Remove from this documentation
+2. Update any dependent references
+3. Clean up related configurations
+
+### When Implementing Solutions:
+1. Document the problem in this file
+2. Explain the solution approach
+3. Update relevant configuration files
+4. Test deployment process
+
+## 📚 Framework Documentation Requirements
+
+### For AI Model Understanding:
+When working with this codebase, AI models MUST consult official framework documentation to ensure accurate implementation and best practices:
+
+**Required Documentation Sources:**
+1. **Node.js & Express.js**: [https://nodejs.org/docs/](mdc:https:/nodejs.org/docs) and [https://expressjs.com/](mdc:https:/expressjs.com)
+2. **WebSocket (ws)**: [https://github.com/websockets/ws](mdc:https:/github.com/websockets/ws)
+3. **PM2 Process Manager**: [https://pm2.keymetrics.io/docs/](mdc:https:/pm2.keymetrics.io/docs)
+4. **Bootstrap 5**: [https://getbootstrap.com/docs/5.0/](mdc:https:/getbootstrap.com/docs/5.0)
+5. **CodeMirror**: [https://codemirror.net/docs/](mdc:https:/codemirror.net/docs)
+6. **Python subprocess**: [https://docs.python.org/3/library/subprocess.html](mdc:https:/docs.python.org/3/library/subprocess.html)
+7. **Bun Package Manager**: [https://bun.sh/docs](mdc:https:/bun.sh/docs)
+
+**Documentation Usage Guidelines:**
+- Always reference official documentation when suggesting code changes
+- Verify API methods and syntax against current framework versions
+- Check for deprecated features and recommend modern alternatives
+- Include framework-specific best practices in implementation
+- Reference security guidelines from official documentation
+- Use framework-recommended patterns for error handling and logging
+
+**Version Compatibility:**
+- Node.js: v18+ (as specified in ecosystem.config.js)
+- Express.js: Latest stable version
+- Bootstrap: v5.x
+- PM2: Latest stable version
+- Python: 3.x for Flex compiler execution
+
+**When Implementing New Features:**
+1. Consult relevant framework documentation first
+2. Follow framework-specific coding patterns
+3. Implement framework-recommended security measures
+4. Use official examples as reference points
+5. Update this documentation with any new framework additions
+
+## 🚀 Current Architecture
+
+### Communication Flow:
+```
+Frontend (Browser) ←→ WebSocket ←→ Backend (Node.js) ←→ Python Process (Flex Compiler)
+                   ↕                    ↕
+            HTTP Fallback         Temporary Files
+```
+
+### Key Technologies:
+- **Frontend**: Vanilla JS, Bootstrap 5, CodeMirror
+- **Backend**: Node.js, Express.js, WebSocket
+- **Process Management**: PM2 with cluster mode
+- **Package Management**: Bun (performance optimized)
+- **Deployment**: Bash scripts with environment detection
+
+## 📊 Performance Metrics
+- **Memory Usage**: ~800MB maximum per instance
+- **Response Time**: <100ms for code execution start
+- **Concurrent Users**: Supports multiple users via cluster mode
+- **Uptime**: Auto-restart on crashes, startup on boot
+
+---
+*Last Updated: [Current Date] - This document is automatically maintained and updated with each file addition/removal*
+
+
