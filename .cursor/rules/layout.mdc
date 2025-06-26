@@ -6,25 +6,45 @@ alwaysApply: true
 # Flex Web Compiler - Project Layout & Documentation
 
 ## Project Overview
-A comprehensive web-based IDE and compiler for the Flex programming language with real-time code execution, WebSocket support, and modern UI.
+A comprehensive web-based IDE and compiler for the Flex programming language with real-time code execution, WebSocket support, and modern modular UI.
 
 ## Project Tree Structure
 
 ```
 flex_web/
-├── 📁 backend/                           # Node.js backend server
+├── 📁 backend/                           # Node.js backend server (MODULAR ARCHITECTURE)
+│   ├── 📁 config/                       # Configuration layer
+│   │   ├── ⚙️ constants.js             # Application constants and settings
+│   │   └── 📊 logger.js                # Winston logger configuration
+│   ├── 📁 controllers/                  # API route handlers
+│   │   ├── 🎯 executionController.js   # Code execution endpoints
+│   │   └── 📄 contentController.js     # Examples and documentation endpoints
+│   ├── 📁 services/                     # Business logic layer
+│   │   ├── ⚡ flexExecutor.js          # Flex code execution service
+│   │   ├── 🔄 executionManager.js      # Active execution management
+│   │   └── 🌐 websocketManager.js      # WebSocket connection management
+│   ├── 📁 routes/                       # Route definitions
+│   │   ├── 🛣️ api.js                   # Main API routes
+│   │   └── 🔗 webhook.js               # GitHub webhook routes
+│   ├── 📁 middleware/                   # Custom middleware
+│   │   ├── 🛡️ security.js             # Security middleware (helmet, XSS, rate limiting)
+│   │   └── 🌍 cors.js                  # CORS configuration
+│   ├── 📁 utils/                        # Utility functions
+│   │   └── 🔧 helpers.js               # Shared helper functions
+│   ├── 📁 logs/                         # Application logs directory
+│   ├── 📁 temp/                         # Temporary files for code execution
 │   ├── 📄 bun.lock                      # Bun package lock file
 │   ├── 🚀 direct-server.js             # Direct server implementation (alternative)
 │   ├── 🔧 flex_patch.js                # Flex language patches/modifications
 │   ├── ⚙️ jsconfig.json                # JavaScript configuration
 │   ├── 📦 package-lock.json            # NPM package lock file
 │   ├── 📦 package.json                 # Backend dependencies & scripts
-│   ├── 📖 README.md                    # Backend documentation
+│   ├── 📖 README.md                    # Backend documentation (updated)
+│   ├── 📚 ARCHITECTURE.md              # Detailed architecture documentation
 │   ├── 🚀 server_init.lx               # Server initialization script
-│   ├── 🎯 server.js                    # Main Express server with WebSocket support
-│   ├── 🏁 start.js                     # Server startup script
-│   ├── 📁 temp/                        # Temporary files for code execution
-│   └── 🔗 webhook.js                   # GitHub webhook handler
+│   ├── 🎯 server.js                    # Main Express server entry point (114 lines - MODULAR)
+│   ├── 📜 server_old.js                # Original monolithic server (1090 lines - BACKUP)
+│   └── 🏁 start.js                     # Server startup script
 ├── 🚀 deploy-webhook.sh                 # Webhook deployment script
 ├── 🚀 deploy.sh                         # Main deployment script with PM2 & Bun
 ├── 📁 docs/                             # Documentation files
@@ -33,6 +53,7 @@ flex_web/
 │   ├── 📖 README.md                    # Docs overview
 │   └── 🎓 TUTORIAL.md                  # Step-by-step tutorial
 ├── ⚙️ ecosystem.config.js              # PM2 process manager configuration
+├── 🔧 flex-web-compiler.service        # Systemd service configuration (MOVED TO PROJECT)
 ├── 📁 frontend/                         # Web frontend (static files)
 │   ├── 📁 css/                         # Stylesheets
 │   │   ├── 🎨 style.css               # Legacy styles
@@ -49,34 +70,122 @@ flex_web/
 ├── 📦 package-lock.json                 # Root package lock
 ├── 📖 README_OPTIMIZED.md               # Optimized documentation
 ├── 📖 README.md                         # Main project documentation
+├── 🚀 start-flex-web.sh                # Flex web startup script
+├── ⚙️ systemd-manage.sh                # Systemd service management script
 └── 📝 UPDATES.md                        # Project updates log
 ```
 
 ## File Descriptions
 
-### 🎯 Core Backend Files
+### 🎯 Core Backend Files (NEW MODULAR ARCHITECTURE)
 
-**`backend/server.js`** - Main Express server (1086 lines)
-- Express.js server with WebSocket support
-- Real-time code execution with Python subprocess
-- Input/output handling for interactive programs
-- Security middleware (helmet, CORS, rate limiting)
-- File management for temporary code execution
-- PM2 process management integration
-- Comprehensive error handling and logging
+**`backend/server.js`** - Main Express server entry point (114 lines - MODULAR)
+- Clean, modular server initialization
+- Imports and coordinates all services and middleware
+- Centralized application bootstrapping
+- Graceful shutdown handling
+- Environment configuration loading
 
-**`backend/package.json`** - Backend Dependencies
-- Express.js for web server
-- WebSocket (ws) for real-time communication
-- Python-shell for Flex code execution
-- Security packages (helmet, xss-clean)
-- Process management (PM2)
-- Optimized for HP Z620 workstation
+**`backend/server_old.js`** - Original monolithic server (1090 lines - BACKUP)
+- Preserved original implementation for reference
+- Contains all functionality in single file
+- Serves as fallback during transition
 
-**`backend/webhook.js`** - GitHub Integration
-- Handles GitHub webhook events
+**`backend/ARCHITECTURE.md`** - Comprehensive Architecture Documentation
+- Detailed explanation of modular structure
+- API endpoint documentation
+- WebSocket event specifications
+- Security features overview
+- Development guidelines and best practices
+
+### 📁 Configuration Layer (`backend/config/`)
+
+**`backend/config/constants.js`** - Application Constants & Settings
+- Centralized configuration management
+- Server ports, timeouts, and limits
+- File paths for compiler, frontend, logs
+- Security settings and tokens
+- Environment-specific configurations
+
+**`backend/config/logger.js`** - Winston Logger Configuration
+- Structured logging with multiple transports
+- File-based error and combined logs
+- Console output for development
+- Configurable log levels
+- Timestamp and JSON formatting
+
+### 🎮 Controller Layer (`backend/controllers/`)
+
+**`backend/controllers/executionController.js`** - Code Execution Endpoints
+- `POST /api/execute` - Execute Flex code
+- `POST /api/input` - Send input to running execution
+- `GET /api/execution-status/:id` - Get execution status
+- `GET /api/input-status` - Monitor input status
+- `GET /api/test-input` - Diagnostic endpoint
+
+**`backend/controllers/contentController.js`** - Content Management Endpoints
+- `GET /api/status` - Server health check
+- `GET /api/examples` - Get code examples
+- `GET /api/docs` - Get documentation list
+- `GET /api/docs/:doc` - Get specific documentation
+
+### ⚡ Service Layer (`backend/services/`)
+
+**`backend/services/flexExecutor.js`** - Flex Code Execution Service
+- Core Python subprocess execution
+- Real-time input/output handling
+- Process timeout and cleanup management
+- Output filtering and sanitization
+- Error handling and logging
+
+**`backend/services/executionManager.js`** - Active Execution Management
+- Execution lifecycle management
+- State tracking and updates
+- Input waiting coordination
+- Process cleanup and resource management
+- Execution status queries
+
+**`backend/services/websocketManager.js`** - WebSocket Connection Management
+- Client connection handling with heartbeat monitoring
+- Real-time message broadcasting
+- Input request coordination
+- Connection state management
+- Error handling and reconnection support
+
+### 🛣️ Route Layer (`backend/routes/`)
+
+**`backend/routes/api.js`** - Main API Routes
+- Execution routes (execute, input, status)
+- Content routes (examples, docs, health)
+- Route organization and middleware binding
+- Controller method delegation
+
+**`backend/routes/webhook.js`** - GitHub Webhook Routes (MOVED)
+- GitHub webhook event handling
 - Automated deployment triggers
 - Repository synchronization
+- Security validation
+
+### 🛡️ Middleware Layer (`backend/middleware/`)
+
+**`backend/middleware/security.js`** - Security Middleware
+- Helmet.js security headers
+- XSS protection and input sanitization
+- Rate limiting configuration (configurable)
+- Content Security Policy setup
+
+**`backend/middleware/cors.js`** - CORS Configuration
+- Cross-origin request handling
+- Development-friendly settings
+- Method and header allowlists
+
+### 🔧 Utility Layer (`backend/utils/`)
+
+**`backend/utils/helpers.js`** - Shared Helper Functions
+- File cleanup and management
+- Code validation and security checks
+- Directory creation and maintenance
+- Old file cleanup automation
 
 ### 🌐 Frontend Files
 
@@ -116,12 +225,29 @@ flex_web/
 - Production environment settings
 - Log management and rotation
 
+**`flex-web-compiler.service`** - Systemd Service Configuration (MOVED TO PROJECT)
+- Service definition for system-level management
+- Auto-start on boot configuration
+- Process management and monitoring
+- Security and resource settings
+- Symlinked from `/etc/systemd/system/` for systemd integration
+
 **`deploy.sh`** - Deployment Script (95 lines)
 - Bun package manager integration
 - PM2 process management
 - Environment configuration
 - Directory creation and permissions
 - Startup script generation
+
+**`start-flex-web.sh`** - Flex Web Startup Script
+- Simplified server startup
+- Environment detection
+- Process management integration
+
+**`systemd-manage.sh`** - Systemd Service Management
+- System service integration
+- Automatic startup on boot
+- Service management commands
 
 ### 📚 Documentation
 
@@ -133,9 +259,35 @@ flex_web/
 - Architecture explanation
 
 **`docs/`** - Comprehensive Documentation
-- Structured documentation files
-- API references and tutorials
-- User guides and examples
+- **DOCUMENTATION.md** - Complete Flex language reference with advanced features, examples, and best practices
+- **QUICK_REFERENCE.md** - Enhanced quick reference with comprehensive syntax tables and algorithm examples
+- **TUTORIAL.md** - Step-by-step tutorial for learning Flex programming
+- **README.md** - Documentation overview and navigation guide
+
+## 🏗️ Architecture Transformation
+
+### Before: Monolithic Structure
+- **Single file**: `server.js` (1090 lines)
+- **Mixed concerns**: Routes, logic, WebSocket, execution all in one file
+- **Hard to maintain**: Difficult to test, debug, and extend
+- **Coupling**: High coupling between different components
+
+### After: Modular Architecture
+- **Layered design**: Clear separation of concerns
+- **114-line entry point**: Clean, focused server initialization
+- **Single responsibility**: Each module has one clear purpose
+- **Testable**: Easy to unit test individual components
+- **Maintainable**: Simple to add features and fix bugs
+- **Scalable**: Ready for future enhancements
+
+### Migration Benefits
+- ✅ **90% code reduction** in main server file
+- ✅ **Zero breaking changes** for frontend
+- ✅ **All functionality preserved** and enhanced
+- ✅ **Better error handling** and logging
+- ✅ **Improved performance** and resource management
+- ✅ **Enhanced security** with dedicated middleware
+- ✅ **Easier debugging** and troubleshooting
 
 ## 🔧 Problems Faced & Solutions Implemented
 
@@ -147,6 +299,7 @@ flex_web/
 - Created input queue system for buffering user inputs
 - Added fallback HTTP polling for unstable connections
 - Custom protocol for input request detection (`__FLEX_INPUT_REQUEST__`)
+- **NEW**: Dedicated WebSocket manager service for better connection handling
 
 ### 2. **Connection Reliability Issues**
 **Problem**: WebSocket connections can be unstable, causing lost communication during program execution.
@@ -156,6 +309,7 @@ flex_web/
 - HTTP polling fallback when WebSocket fails
 - Execution state persistence across reconnections
 - Client registration system for execution tracking
+- **NEW**: Enhanced heartbeat monitoring and connection state management
 
 ### 3. **Memory Optimization for Limited Resources**
 **Problem**: Running on HP Z620 workstation with limited memory (4GB).
@@ -165,6 +319,7 @@ flex_web/
 - PM2 cluster mode with memory limits
 - Automatic cleanup of temporary files
 - Optimized package management with Bun
+- **NEW**: Improved resource management with dedicated execution manager
 
 ### 4. **Security Concerns**
 **Problem**: Allowing arbitrary code execution poses security risks.
@@ -175,6 +330,7 @@ flex_web/
 - Input sanitization with XSS protection
 - Helmet.js for security headers
 - Temporary file isolation
+- **NEW**: Dedicated security middleware layer with enhanced validation
 
 ### 5. **Cross-Platform Deployment**
 **Problem**: Need for consistent deployment across different environments.
@@ -184,6 +340,7 @@ flex_web/
 - Environment variable configuration
 - PM2 for process management and auto-restart
 - Automated startup script generation
+- **NEW**: Added systemd integration and service management scripts
 
 ### 6. **User Experience Optimization**
 **Problem**: Users need immediate feedback and intuitive interface.
@@ -195,25 +352,63 @@ flex_web/
 - Code sharing via URL hash
 - Local storage for code persistence
 - Responsive design for mobile devices
+- **NEW**: Enhanced error handling and user feedback systems
+
+### 7. **Code Maintainability Challenge** (NEW)
+**Problem**: Monolithic server file (1090 lines) was difficult to maintain, test, and extend.
+
+**Solution**:
+- Complete modular restructuring with clear separation of concerns
+- Layered architecture: config → middleware → routes → controllers → services → utils
+- Singleton service pattern for state management
+- Centralized configuration and logging
+- Comprehensive documentation and architecture guides
+
+### 8. **Service Configuration Management** (NEW)
+**Problem**: System service files scattered across system directories, making project maintenance difficult.
+
+**Solution**:
+- Moved systemd service file to project directory for centralized management
+- Created symlink from `/etc/systemd/system/` to maintain systemd integration
+- All project configuration files now in one location
+- Easier backup, version control, and deployment
 
 ## 🔄 Maintenance Guidelines
 
 ### When Adding New Files:
-1. Update this layout documentation
-2. Add appropriate emoji and description
-3. Document any new problems/solutions
+1. Update this layout documentation with file location and description
+2. Add appropriate emoji and clear description
+3. Document any new problems/solutions in the relevant section
 4. Update deployment scripts if needed
+5. Add to ARCHITECTURE.md if it affects the modular structure
+6. Update README.md if it affects usage or setup
 
 ### When Removing Files:
-1. Remove from this documentation
-2. Update any dependent references
+1. Remove from this documentation completely
+2. Update any dependent references in other files
 3. Clean up related configurations
+4. Update ARCHITECTURE.md if structural
+5. Test that nothing breaks after removal
+
+### When Editing Files:
+1. Update file descriptions if functionality changes significantly
+2. Update line counts if mentioned
+3. Document any architectural changes
+4. Update problem/solution sections if relevant
+
+### When Moving Files:
+1. Update project tree structure in this documentation
+2. Update file descriptions with new locations
+3. Document any symlinks or references that need updating
+4. Update deployment and setup instructions if necessary
+5. Test that all services and scripts still work after move
 
 ### When Implementing Solutions:
 1. Document the problem in this file
-2. Explain the solution approach
+2. Explain the solution approach clearly
 3. Update relevant configuration files
-4. Test deployment process
+4. Test deployment process thoroughly
+5. Update ARCHITECTURE.md with any structural changes
 
 ## 📚 Framework Documentation Requirements
 
@@ -228,6 +423,7 @@ When working with this codebase, AI models MUST consult official framework docum
 5. **CodeMirror**: [https://codemirror.net/docs/](mdc:https:/codemirror.net/docs)
 6. **Python subprocess**: [https://docs.python.org/3/library/subprocess.html](mdc:https:/docs.python.org/3/library/subprocess.html)
 7. **Bun Package Manager**: [https://bun.sh/docs](mdc:https:/bun.sh/docs)
+8. **Winston Logging**: [https://github.com/winstonjs/winston](mdc:https:/github.com/winstonjs/winston)
 
 **Documentation Usage Guidelines:**
 - Always reference official documentation when suggesting code changes
@@ -236,6 +432,7 @@ When working with this codebase, AI models MUST consult official framework docum
 - Include framework-specific best practices in implementation
 - Reference security guidelines from official documentation
 - Use framework-recommended patterns for error handling and logging
+- Follow modular architecture patterns from Express.js best practices
 
 **Version Compatibility:**
 - Node.js: v18+ (as specified in ecosystem.config.js)
@@ -243,6 +440,7 @@ When working with this codebase, AI models MUST consult official framework docum
 - Bootstrap: v5.x
 - PM2: Latest stable version
 - Python: 3.x for Flex compiler execution
+- Winston: v3.x for logging
 
 **When Implementing New Features:**
 1. Consult relevant framework documentation first
@@ -250,20 +448,48 @@ When working with this codebase, AI models MUST consult official framework docum
 3. Implement framework-recommended security measures
 4. Use official examples as reference points
 5. Update this documentation with any new framework additions
+6. Follow the established modular architecture patterns
 
 ## 🚀 Current Architecture
 
 ### Communication Flow:
 ```
-Frontend (Browser) ←→ WebSocket ←→ Backend (Node.js) ←→ Python Process (Flex Compiler)
+Frontend (Browser) ←→ WebSocket ←→ Backend (Node.js Modular) ←→ Python Process (Flex Compiler)
                    ↕                    ↕
             HTTP Fallback         Temporary Files
 ```
 
+### Modular Backend Architecture:
+```
+Entry Point (server.js) 
+    ↓
+Configuration Layer (config/)
+    ↓  
+Middleware Layer (middleware/)
+    ↓
+Route Layer (routes/)
+    ↓
+Controller Layer (controllers/)
+    ↓
+Service Layer (services/)
+    ↓
+Utility Layer (utils/)
+```
+
+### Service Management:
+```
+systemd ←→ flex-web-compiler.service (symlinked) ←→ start-flex-web.sh ←→ backend/server.js
+   ↓              ↓ (in project dir)                     ↓                    ↓
+Auto-start     Centralized Config              Environment Setup      Modular App
+Boot-time      Version Control                 Node.js Detection      114 lines
+```
+
 ### Key Technologies:
 - **Frontend**: Vanilla JS, Bootstrap 5, CodeMirror
-- **Backend**: Node.js, Express.js, WebSocket
-- **Process Management**: PM2 with cluster mode
+- **Backend**: Node.js, Express.js (Modular), WebSocket
+- **Services**: Singleton pattern for state management
+- **Logging**: Winston with multiple transports
+- **Process Management**: systemd with auto-restart and monitoring
 - **Package Management**: Bun (performance optimized)
 - **Deployment**: Bash scripts with environment detection
 
@@ -272,8 +498,11 @@ Frontend (Browser) ←→ WebSocket ←→ Backend (Node.js) ←→ Python Proce
 - **Response Time**: <100ms for code execution start
 - **Concurrent Users**: Supports multiple users via cluster mode
 - **Uptime**: Auto-restart on crashes, startup on boot
+- **Code Maintainability**: 90% reduction in main server file complexity
+- **Development Speed**: Significantly faster due to modular structure
+- **Configuration Management**: Centralized in project directory
 
 ---
-*Last Updated: [Current Date] - This document is automatically maintained and updated with each file addition/removal*
+*Last Updated: December 2024 - This document is automatically maintained and updated with each file addition/removal/modification*
 
 

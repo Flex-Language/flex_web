@@ -1,0 +1,31 @@
+[Unit]
+Description=Flex Web Compiler - Online IDE and Compiler for Flex Language
+Documentation=https://deepwiki.com/Flex-Language/Flex
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/var/wwww/Flex/flex_web
+ExecStart=/var/wwww/Flex/flex_web/start-flex-web.sh
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=flex-web-compiler
+
+# Security settings (relaxed for compatibility)
+NoNewPrivileges=true
+ReadWritePaths=/var/wwww/Flex/flex_web/backend/temp
+ReadWritePaths=/var/wwww/Flex/flex_web/logs
+
+# Resource limits
+LimitNOFILE=65536
+TimeoutStartSec=30
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target 

@@ -1,18 +1,55 @@
 # Flex Online Compiler
 
-A comprehensive web-based IDE and compiler for the Flex programming language.
+A comprehensive web-based IDE and compiler for the Flex programming language. Flex is a modern, custom-designed programming language with unique syntax featuring keywords like `rakm`, `sndo2`, `rg3`, `geeb`, and `dorg`. The language combines simplicity with powerful features including AI-assisted error handling, real-time execution, and modular programming capabilities.
 
 ## Features
 
-- **Code Editor**: Feature-rich editor with syntax highlighting for Flex
-- **Code Execution**: Run Flex code directly in the browser
-- **Examples Gallery**: Collection of example Flex programs
-- **Documentation**: Integrated language reference and tutorials
+- **Code Editor**: Feature-rich editor with syntax highlighting for Flex language keywords
+- **Code Execution**: Real-time Flex code execution with interactive input/output
+- **Examples Gallery**: Collection of example Flex programs demonstrating language features
+- **Enhanced Documentation**: Comprehensive language reference, quick reference guide, and step-by-step tutorials
+- **AI-Assisted Debugging**: Optional AI-powered error analysis and suggestions
 - **Code Sharing**: Share your code with others via URL
 - **Local Storage**: Automatically saves your code in the browser
 - **Keyboard Shortcuts**: Convenient keyboard shortcuts for common actions
 - **Security**: Protected against malicious code execution
 - **Responsive Design**: Works on desktop and mobile devices
+
+## About the Flex Programming Language
+
+Flex is a custom programming language with a unique syntax designed for clarity and ease of use:
+
+### Key Features
+- **Unique Keywords**: `rakm` (numbers), `dorg` (arrays), `sndo2` (functions), `rg3` (return), `geeb` (import)
+- **String Interpolation**: Use `{variable}` syntax within strings
+- **Type Annotations**: Optional explicit typing with `rakm` for numbers
+- **AI-Assisted Error Handling**: Get intelligent suggestions when errors occur
+- **Interactive Input/Output**: Support for `da5l()` and `input()` functions
+
+### Simple Example
+```flex
+# Define a function to calculate factorial
+sndo2 factorial(n) {
+    if (n <= 1) {
+        rg3 1
+    }
+    rg3 n * factorial(n - 1)
+}
+
+# Get input from user
+print("Enter a number:")
+num_str = da5l()
+num = int(num_str)
+
+# Calculate and display result
+result = factorial(num)
+print("Factorial of {num} is {result}")
+```
+
+### Documentation
+- **[Complete Language Reference](docs/DOCUMENTATION.md)** - Comprehensive guide with advanced features
+- **[Quick Reference](docs/QUICK_REFERENCE.md)** - Syntax tables and common patterns
+- **[Tutorial](docs/TUTORIAL.md)** - Step-by-step learning guide
 
 ## Project Structure
 
