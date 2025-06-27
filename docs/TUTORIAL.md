@@ -1,348 +1,455 @@
-# Flex Programming Language Tutorial
+# Flex Programming Tutorial
 
-This tutorial will guide you through creating your first Flex program, from installation to writing and running code.
+Welcome to the comprehensive Flex programming tutorial! This guide will take you from beginner to proficient in the Flex programming language.
 
 ## Table of Contents
 
-1. [Installation](#installation)
-2. [Hello World](#hello-world)
+1. [Introduction](#introduction)
+2. [Your First Program](#your-first-program)
 3. [Variables and Data Types](#variables-and-data-types)
-4. [Control Structures](#control-structures)
-5. [Functions](#functions)
-6. [Working with Lists](#working-with-lists)
-7. [File Import](#file-import)
-8. [Using AI-Assisted Error Handling](#using-ai-assisted-error-handling)
-9. [Next Steps](#next-steps)
+4. [Operators](#operators)
+5. [Control Flow](#control-flow)
+6. [Functions](#functions)
+7. [Input and Output](#input-and-output)
+8. [Advanced Features](#advanced-features)
+9. [Practice Exercises](#practice-exercises)
 
-## Installation
+## Introduction
 
-### Prerequisites
+Flex is a modern programming language designed for simplicity and performance. It combines the ease of use found in scripting languages with the structure of compiled languages.
 
-- Python 3.6 or higher
-- For AI features (optional):
-  - [LM Studio](https://lmstudio.ai/) with Qwen2.5 7B Instruct 1M model
-  - OpenAI API key (optional alternative)
+### Key Features:
+- **Type Inference**: Variables automatically detect their type
+- **String Interpolation**: Easy variable insertion in strings
+- **Interactive I/O**: Real-time input/output capabilities
+- **Modern Syntax**: Clean, readable code structure
 
-### Setup Steps
+## Your First Program
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd Flex
-   ```
+Let's start with the classic "Hello, World!" program:
 
-2. For AI features (optional):
-   - Install LM Studio
-   - Download the Qwen2.5 7B Instruct 1M model
-   - Start LM Studio and enable the API server
+```flex
+print("Hello, World!")
+```
 
-## Hello World
+That's it! Run this code and you'll see the output in the console.
 
-Let's create your first Flex program:
-
-1. Create a new file named `hello.txt` in the Flex directory
-2. Add the following code:
-   ```
-   print("Hello, World!")
-   ```
-3. Run the program:
-   - On Unix/Linux/macOS:
-     ```bash
-     ./flex.sh hello.txt
-     ```
-   - On Windows:
-     ```bash
-     flex.bat hello.txt
-     ```
-
-You should see `Hello, World!` printed to the console.
+### Exercise 1.1
+Try modifying the message to print your name:
+```flex
+print("Hello, [Your Name]!")
+```
 
 ## Variables and Data Types
 
-Let's explore variables and data types in Flex:
+### Variable Declaration
 
-1. Create a new file named `variables.txt`
-2. Add the following code:
-   ```
-   # Integer variable with type annotation
-   rakm age = 25
-   print("Age: {age}")
-   
-   # String variable (type inferred)
-   name = "John Doe"
-   print("Name: {name}")
-   
-   # Boolean variable
-   is_student = true
-   print("Is student: {is_student}")
-   
-   # Float variable
-   height = 1.75
-   print("Height: {height} meters")
-   
-   # List/array
-   dorg hobbies = ["reading", "coding", "gaming"]
-   print("First hobby: {hobbies[0]}")
-   ```
-3. Run the program:
-   ```bash
-   ./flex.sh variables.txt
-   ```
+In Flex, you can declare variables in two ways:
 
-This program demonstrates different variable types in Flex. Notice how you can use string interpolation with `{variable_name}` inside strings.
+1. **Explicit declaration** with `rakm`:
+```flex
+rakm x = 10
+```
 
-## Control Structures
+2. **Type inference** (recommended):
+```flex
+x = 10        // Integer
+name = "John" // String  
+is_valid = true // Boolean
+```
 
-Now let's explore control structures:
+### Data Types
 
-1. Create a new file named `control.txt`
-2. Add the following code:
-   ```
-   # If-else statement
-   rakm age = 20
-   
-   if (age >= 18) {
-       print("You are an adult")
-   } else {
-       print("You are a minor")
-   }
-   
-   # For loop
-   print("Counting from 1 to 5:")
-   for (i=1; i<=5; i++) {
-       print("Number {i}")
-   }
-   
-   # While loop
-   print("Countdown:")
-   rakm count = 5
-   while (count > 0) {
-       print("Count: {count}")
-       count--
-   }
-   
-   # Break statement
-   print("Using break:")
-   for (i=1; i<=10; i++) {
-       if (i == 6) {
-           print("Breaking at 6")
-           break
-       }
-       print("Loop number {i}")
-   }
-   ```
-3. Run the program:
-   ```bash
-   ./flex.sh control.txt
-   ```
+#### Numbers
+```flex
+age = 25              // Integer
+height = 5.8          // Float
+temperature = -10     // Negative number
+```
 
-This program demonstrates conditional statements and loops in Flex.
+#### Strings
+```flex
+name = "Alice"
+message = 'Hello there'   // Single quotes also work
+empty_string = ""
+```
+
+#### Booleans
+```flex
+is_student = true
+is_working = false
+```
+
+### Exercise 2.1
+Create variables for your personal information:
+```flex
+name = "Your Name"
+age = 20
+height = 5.5
+is_student = true
+
+print("Name: {name}")
+print("Age: {age}")
+print("Height: {height}")
+print("Student: {is_student}")
+```
+
+## Operators
+
+### Arithmetic Operators
+```flex
+a = 10
+b = 3
+
+sum = a + b          // 13
+difference = a - b   // 7
+product = a * b      // 30
+quotient = a / b     // 3.33...
+remainder = a % b    // 1
+```
+
+### Comparison Operators
+```flex
+x = 5
+y = 10
+
+print(x == y)        // false
+print(x != y)        // true
+print(x < y)         // true
+print(x > y)         // false
+print(x <= y)        // true
+print(x >= y)        // false
+```
+
+### Logical Operators
+```flex
+is_adult = true
+has_license = false
+
+can_drive = is_adult && has_license  // false
+can_vote = is_adult || has_license   // true
+is_minor = !is_adult                 // false
+```
+
+### Exercise 3.1
+Create a simple calculator:
+```flex
+a = 15
+b = 4
+
+print("Addition: {a} + {b} = {a + b}")
+print("Subtraction: {a} - {b} = {a - b}")
+print("Multiplication: {a} * {b} = {a * b}")
+print("Division: {a} / {b} = {a / b}")
+```
+
+## Control Flow
+
+### If Statements
+
+```flex
+age = 18
+
+if (age >= 18) {
+    print("You are an adult")
+} else {
+    print("You are a minor")
+}
+```
+
+#### Multiple Conditions
+```flex
+score = 85
+
+if (score >= 90) {
+    print("Grade: A")
+} else if (score >= 80) {
+    print("Grade: B")
+} else if (score >= 70) {
+    print("Grade: C")
+} else {
+    print("Grade: F")
+}
+```
+
+### Loops
+
+#### For Loops
+```flex
+// Basic for loop
+for (i = 0; i < 5; i++) {
+    print("Count: {i}")
+}
+
+// Countdown
+for (i = 10; i > 0; i--) {
+    print("Countdown: {i}")
+}
+```
+
+#### While Loops
+```flex
+count = 0
+while (count < 3) {
+    print("Loop iteration: {count}")
+    count = count + 1
+}
+```
+
+### Exercise 4.1
+Create a program that prints the multiplication table for a number:
+```flex
+number = 7
+for (i = 1; i <= 10; i++) {
+    result = number * i
+    print("{number} x {i} = {result}")
+}
+```
 
 ## Functions
 
-Let's create and use functions:
+### Function Definition
+```flex
+function greet(name) {
+    return "Hello, {name}!"
+}
 
-1. Create a new file named `functions.txt`
-2. Add the following code:
-   ```
-   # Simple function with no parameters
-   sndo2 greet() {
-       print("Hello, there!")
-   }
-   
-   # Call the function
-   greet()
-   
-   # Function with parameters
-   sndo2 personalized_greeting(name) {
-       print("Hello, {name}!")
-   }
-   
-   # Call the function with an argument
-   personalized_greeting("Alice")
-   
-   # Function with return value
-   sndo2 add(a, b) {
-       rg3 a + b
-   }
-   
-   # Call the function and store the result
-   sum = add(5, 3)
-   print("5 + 3 = {sum}")
-   
-   # Function with typed parameters
-   sndo2 multiply(int x, int y) {
-       rg3 x * y
-   }
-   
-   # Call the function
-   product = multiply(4, 7)
-   print("4 * 7 = {product}")
-   
-   # Recursive function
-   sndo2 factorial(n) {
-       if (n <= 1) {
-           rg3 1
-       }
-       rg3 n * factorial(n - 1)
-   }
-   
-   # Call the recursive function
-   result = factorial(5)
-   print("Factorial of 5 is {result}")
-   ```
-3. Run the program:
-   ```bash
-   ./flex.sh functions.txt
-   ```
+message = greet("Alice")
+print(message)
+```
 
-This program demonstrates how to define and call functions in Flex, including functions with parameters, return values, and recursion.
+### Functions with Multiple Parameters
+```flex
+function add(a, b) {
+    return a + b
+}
 
-## Working with Lists
+function multiply(x, y, z) {
+    return x * y * z
+}
 
-Let's explore working with lists:
+sum = add(5, 3)           // 8
+product = multiply(2, 3, 4) // 24
+```
 
-1. Create a new file named `lists.txt`
-2. Add the following code:
-   ```
-   # Create a list
-   dorg numbers = [10, 20, 30, 40, 50]
-   
-   # Access elements
-   print("First element: {numbers[0]}")
-   print("Third element: {numbers[2]}")
-   
-   # Modify elements
-   numbers[1] = 25
-   print("Modified list: {numbers}")
-   
-   # Loop through the list
-   print("All numbers:")
-   for (i=0; i<5; i++) {
-       print("numbers[{i}] = {numbers[i]}")
-   }
-   
-   # Calculate sum of list elements
-   sum = 0
-   for (i=0; i<5; i++) {
-       sum = sum + numbers[i]
-   }
-   print("Sum of all numbers: {sum}")
-   
-   # Find maximum value
-   sndo2 find_max(list) {
-       max = list[0]
-       for (i=1; i<5; i++) {
-           if (list[i] > max) {
-               max = list[i]
-           }
-       }
-       rg3 max
-   }
-   
-   max_value = find_max(numbers)
-   print("Maximum value: {max_value}")
-   
-   # Mixed type list
-   dorg mixed = ["hello", 42, true, 3.14]
-   print("Mixed list: {mixed}")
-   ```
-3. Run the program:
-   ```bash
-   ./flex.sh lists.txt
-   ```
+### Functions without Return Value
+```flex
+function printInfo(name, age) {
+    print("Name: {name}")
+    print("Age: {age}")
+}
 
-## File Import
+printInfo("Bob", 25)
+```
 
-Flex allows you to import code from other files:
+### Exercise 5.1
+Create a function to calculate the area of a rectangle:
+```flex
+function calculateArea(width, height) {
+    return width * height
+}
 
-1. Create two files:
-   
-   `math_utils.txt`:
-   ```
-   sndo2 add(a, b) {
-       rg3 a + b
-   }
-   
-   sndo2 subtract(a, b) {
-       rg3 a - b
-   }
-   
-   sndo2 multiply(a, b) {
-       rg3 a * b
-   }
-   
-   sndo2 divide(a, b) {
-       if (b == 0) {
-           print("Error: Division by zero!")
-           rg3 0
-       }
-       rg3 a / b
-   }
-   ```
-   
-   `calculator.txt`:
-   ```
-   # Import the file containing math functions
-   geeb "math_utils.txt"
-   
-   # Now we can use the imported functions
-   x = 10
-   y = 5
-   
-   print("{x} + {y} = {add(x, y)}")
-   print("{x} - {y} = {subtract(x, y)}")
-   print("{x} * {y} = {multiply(x, y)}")
-   print("{x} / {y} = {divide(x, y)}")
-   
-   # Test division by zero
-   print("10 / 0 = {divide(10, 0)}")
-   ```
+area = calculateArea(5, 3)
+print("Area: {area} square units")
+```
 
-2. Run the calculator program:
-   ```bash
-   ./flex.sh calculator.txt
-   ```
+## Input and Output
 
-This demonstrates how to organize your code across multiple files by importing functionality.
+### Output with print()
+```flex
+print("Simple message")
+print("Number: {42}")
 
-## Using AI-Assisted Error Handling
+name = "Alice"
+age = 25
+print("Hello {name}, you are {age} years old")
+```
 
-Flex includes AI-assisted error handling to help debug your code:
+### Input with da5l()
 
-1. Create a file with an intentional error:
-   
-   `error_example.txt`:
-   ```
-   # This has a syntax error - missing closing brace
-   if (true) {
-       print("This will cause an error"
-   
-   # This has a logical error - division by zero
-   result = 10 / 0
-   print("Result: {result}")
-   ```
+The `da5l()` function reads user input:
 
-2. Run with AI assistance:
-   ```bash
-   # Unix/Linux/macOS
-   export USE_AI=true
-   ./flex.sh error_example.txt
-   
-   # Windows
-   set USE_AI=true
-   flex.bat error_example.txt
-   ```
+```flex
+print("What is your name?")
+name = da5l()
+print("Hello, {name}!")
+```
 
-The AI will identify and explain the errors and suggest fixes.
+### Input Validation
+```flex
+print("Enter your age:")
+age_input = da5l()
 
-## Next Steps
+if (age_input.isdigit()) {
+    age = int(age_input)
+    print("You are {age} years old")
+} else {
+    print("Please enter a valid number")
+}
+```
 
-Now that you've completed this tutorial, you can:
+### Exercise 6.1
+Create an interactive program:
+```flex
+print("Personal Information Form")
+print("---------------------------")
 
-1. Explore the Examples section for more complex programs
-2. Read the Full Documentation for detailed language specifications
-3. Create your own Flex programs
-4. Contribute to the Flex language development
+print("Enter your name:")
+name = da5l()
+
+print("Enter your age:")
+age_str = da5l()
+age = int(age_str)
+
+print("Enter your city:")
+city = da5l()
+
+print("\n--- Your Information ---")
+print("Name: {name}")
+print("Age: {age}")
+print("City: {city}")
+
+if (age >= 18) {
+    print("Status: Adult")
+} else {
+    print("Status: Minor")
+}
+```
+
+## Advanced Features
+
+### String Methods
+```flex
+text = "hello world"
+upper_text = text.upper()        // "HELLO WORLD"
+length = text.length()           // 11
+contains_hello = text.contains("hello") // true
+```
+
+### Type Conversion
+```flex
+// String to number
+number_str = "42"
+number = int(number_str)
+
+// Number to string  
+age = 25
+age_str = str(age)
+
+// Check if string is a number
+input = "123"
+if (input.isdigit()) {
+    print("Valid number")
+}
+```
+
+### Complex Conditionals
+```flex
+age = 20
+has_license = true
+has_car = false
+
+if (age >= 18 && has_license) {
+    if (has_car) {
+        print("You can drive your own car")
+    } else {
+        print("You can drive but need to borrow a car")
+    }
+} else {
+    print("You cannot drive yet")
+}
+```
+
+## Practice Exercises
+
+### Exercise 7.1: Number Guessing Game
+```flex
+secret_number = 42
+print("Guess the number (1-100):")
+
+guess_str = da5l()
+guess = int(guess_str)
+
+if (guess == secret_number) {
+    print("Congratulations! You guessed it!")
+} else if (guess < secret_number) {
+    print("Too low!")
+} else {
+    print("Too high!")
+}
+```
+
+### Exercise 7.2: Simple Calculator
+```flex
+print("Simple Calculator")
+print("Enter first number:")
+a = int(da5l())
+
+print("Enter operator (+, -, *, /):")
+operator = da5l()
+
+print("Enter second number:")
+b = int(da5l())
+
+if (operator == "+") {
+    result = a + b
+} else if (operator == "-") {
+    result = a - b
+} else if (operator == "*") {
+    result = a * b
+} else if (operator == "/") {
+    result = a / b
+} else {
+    print("Invalid operator!")
+    result = 0
+}
+
+if (operator == "+" || operator == "-" || operator == "*" || operator == "/") {
+    print("Result: {a} {operator} {b} = {result}")
+}
+```
+
+### Exercise 7.3: Fibonacci Sequence
+```flex
+print("Fibonacci sequence generator")
+print("How many numbers do you want?")
+n = int(da5l())
+
+a = 0
+b = 1
+
+print("Fibonacci sequence:")
+for (i = 0; i < n; i++) {
+    if (i == 0) {
+        print(a)
+    } else if (i == 1) {
+        print(b)
+    } else {
+        c = a + b
+        print(c)
+        a = b
+        b = c
+    }
+}
+```
+
+## Tips for Using the Online Compiler
+
+1. **Input Queue**: You can pre-enter multiple inputs in the input area before running your program
+2. **Save Your Work**: Use Ctrl+S to save your code to browser storage
+3. **Share Code**: Copy the URL after editing to share your code with others
+4. **Keyboard Shortcuts**: Use Ctrl+Enter to run code quickly
+5. **Examples**: Check out the Examples section for more sample programs
+
+## Conclusion
+
+Congratulations! You've learned the fundamentals of Flex programming. Practice with the exercises and experiment with the online compiler to improve your skills.
+
+Key takeaways:
+- Use meaningful variable names
+- Comment your code for clarity
+- Validate user input
+- Break complex problems into smaller functions
+- Practice regularly with different types of programs
 
 Happy coding with Flex! 

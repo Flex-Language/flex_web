@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Functionality Test</title>
+</head>
+<body>
+    <h1>JavaScript Functionality Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const results = document.getElementById('test-results');
+            const tests = [];
+            
+            // Test 1: Check if basic DOM elements exist
+            const runButton = document.getElementById('run-button');
+            tests.push(`Run button exists: ${!!runButton}`);
+            
+            const navLinks = document.querySelectorAll('.nav-link[data-page]');
+            tests.push(`Navigation links found: ${navLinks.length}`);
+            
+            const shortcutsLink = document.getElementById('shortcuts-link');
+            tests.push(`Shortcuts link exists: ${!!shortcutsLink}`);
+            
+            const pages = document.querySelectorAll('.page');
+            tests.push(`Pages found: ${pages.length}`);
+            
+            // Test 2: Check if CodeMirror is available
+            tests.push(`CodeMirror available: ${typeof CodeMirror !== 'undefined'}`);
+            
+            // Test 3: Check if Bootstrap is available
+            tests.push(`Bootstrap available: ${typeof bootstrap !== 'undefined'}`);
+            
+            // Test 4: Check if marked (markdown parser) is available
+            tests.push(`Marked available: ${typeof marked !== 'undefined'}`);
+            
+            results.innerHTML = tests.map(test => `<p>${test}</p>`).join('');
+            
+            console.log('Test results:', tests);
+        });
+    </script>
+</body>
+</html> 

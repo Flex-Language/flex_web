@@ -1,164 +1,119 @@
-# Flex Language Documentation
+# Flex Programming Language
 
-Flex is a modern programming language designed for simplicity and flexibility. This documentation will help you get started with Flex and understand its key features.
+Welcome to the **Flex Online Compiler**! This is your gateway to learning and using the Flex programming language.
 
 ## Getting Started
 
-### Installation
+Flex is a modern programming language designed for simplicity and performance. The online compiler provides a complete development environment with real-time execution and interactive capabilities.
 
-1. **Prerequisites:**
-   - Python 3.6 or higher
-   - Git
+### Your First Program
 
-2. **Setup:**
-   - Clone the Flex repository:
-     ```bash
-     git clone <repository-url>
-     cd Flex
-     ```
-   - No additional installation is needed - Flex runs as a Python application
-
-3. **Running the Web Compiler:**
-   - The easiest way to get started is using the Flex Web Compiler you're currently using
-   - Alternatively, you can run Flex programs from the command line:
-     ```bash
-     # On Linux/macOS
-     ./flex.sh your_program.txt
-     
-     # On Windows
-     flex.bat your_program.txt
-     ```
-
-### Your First Flex Program
-
-Flex syntax is similar to Python but with some unique features:
-
-```
-// This is a comment in Flex
-
-// Variables are declared without type annotations
-x = 10
-y = "Hello"
-z = true
-
-// Printing values
-print("The value of x is {x}")
-
-// Input handling with da5l()
-name = da5l() // Reads a line of input from the user
-print("Hello, {name}!")
-
-// Functions 
-function add(a, b) {
-  return a + b
-}
-
-result = add(5, 10)
-print("5 + 10 = {result}")
+```flex
+print("Hello, World!")
 ```
 
-### Code Structure
+### Variables and Data Types
 
-A typical Flex program consists of:
-
-1. **Variable declarations** - Define your data
-2. **Function definitions** - Create reusable code blocks
-3. **Execution statements** - Perform operations and produce output
-
-### Editor Features
-
-The Flex Web Compiler provides:
-
-- Syntax highlighting
-- Code execution
-- Interactive input handling
-- Example programs to learn from
-- Documentation access
-- Real-time error messages
-
-## Key Features
-
-### Input Handling
-
-Flex provides the `da5l()` function to read input from the user. It pauses program execution and waits for user input.
-
-Example:
-```
-print("Enter your name:")
-name = da5l()
-print("Hello, {name}!")
+```flex
+// Variable declaration
+rakm x = 10          // Integer variable  
+y = 20               // Type inference
+name = "Flex"        // String variable
+is_valid = true      // Boolean variable
 ```
 
 ### String Interpolation
 
-Flex supports string interpolation using curly braces `{}`:
+Flex supports modern string interpolation using `{variable}` syntax:
 
-```
+```flex
 x = 10
 y = 20
 print("The sum of {x} and {y} is {x + y}")
 ```
 
-### Control Flow
+### Control Structures
 
-Flex supports standard control flow statements:
-
-```
-// Conditional statements
-if (x > 10) {
-  print("x is greater than 10")
-} else if (x == 10) {
-  print("x is equal to 10")
+#### Conditional Statements
+```flex
+age = 18
+if (age >= 18) {
+    print("You are an adult")
 } else {
-  print("x is less than 10")
+    print("You are a minor")
 }
+```
 
-// Loops
+#### Loops
+```flex
+// For loop
 for (i = 0; i < 5; i++) {
-  print("Loop iteration: {i}")
+    print("Iteration: {i}")
 }
-```
 
-### Data Types
-
-Flex supports these primary data types:
-
-```
-// Integer
-rakm num = 42
-
-// Float 
-pi = 3.14159
-
-// String
-message = "Hello, Flex!"
-
-// Boolean
-is_valid = true
-
-// List/Array
-dorg items = [1, 2, 3, "mixed types allowed"]
+// While loop
+rakm count = 0
+while (count < 3) {
+    print("Count: {count}")
+    count = count + 1
+}
 ```
 
 ### Functions
 
-Functions are declared with the `sndo2` keyword and return values with `rg3`:
-
-```
-sndo2 calculate_area(width, height) {
-  area = width * height
-  rg3 area
+```flex
+function greet(name) {
+    return "Hello, {name}!"
 }
 
-rectangle_area = calculate_area(5, 10)
-print("The area is {rectangle_area}")
+result = greet("World")
+print(result)
 ```
 
-## Additional Resources
+### Interactive Input
 
-- **Examples Tab**: Browse example programs to see Flex in action
-- **Quick Reference**: Concise syntax guide for quick lookups
-- **Tutorial**: Step-by-step guide to learning Flex programming
-- **Full Documentation**: Complete language specification
+Flex provides two functions for user input:
 
-For more help, check out the other sections in the Documentation tab. Happy coding! 
+- `da5l()` - Reads user input (preferred method)
+- `input()` - Alternative input method
+
+```flex
+print("What is your name?")
+name = da5l()
+print("Hello, {name}!")
+```
+
+## Features
+
+- **Type Inference**: Automatic type detection
+- **String Interpolation**: Modern `{variable}` syntax in strings  
+- **Interactive I/O**: Real-time input via `da5l()` and `input()` functions
+- **Modern Syntax**: C-style control structures
+- **Real-time Execution**: Compiled and executed in web environment
+
+## Online Compiler Features
+
+- **Real-time Code Editor**: Syntax highlighting with Dracula theme
+- **Instant Execution**: Run code with Ctrl+Enter
+- **Interactive Input**: Queue multiple inputs in advance
+- **Code Sharing**: Share your code via URL
+- **Examples**: Built-in sample programs
+- **WebSocket Communication**: Live program interaction
+
+## Keyboard Shortcuts
+
+- **Ctrl + Enter**: Run code
+- **Ctrl + S**: Save code to browser storage  
+- **Tab**: Insert 4 spaces
+- **Ctrl + /**: Toggle comment
+- **Ctrl + Z**: Undo
+- **Ctrl + Y**: Redo
+
+## Next Steps
+
+1. Try the built-in examples in the Examples section
+2. Experiment with the interactive input features
+3. Check out the Quick Reference for more syntax details
+4. Read the full Tutorial for comprehensive learning
+
+Happy coding with Flex! 

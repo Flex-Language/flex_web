@@ -2,7 +2,7 @@ module.exports = {
   apps: [{
     name: 'flex-web-compiler',
     script: './backend/server.js',
-    instances: 2,
+    instances: 1,
     exec_mode: 'cluster',
     autorestart: true,
     watch: false,
@@ -41,7 +41,7 @@ module.exports = {
       '.git'
     ]
   }],
-  
+
   deploy: {
     production: {
       user: 'root',

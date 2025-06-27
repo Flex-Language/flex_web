@@ -1,0 +1,18 @@
+// Hello World - Your First Flex Program
+
+print("Hello, World!")
+print("Welcome to the Flex Online Compiler!")
+
+// Variables and string interpolation
+name = "Flex"
+version = 1.0
+
+print("Programming language: {name}")
+print("Version: {version}")
+
+// Simple math
+x = 10
+y = 20
+sum = x + y
+
+print("The sum of {x} and {y} is {sum}") 

@@ -1,0 +1,75 @@
+// String Manipulation Examples
+
+print("=== String Manipulation Demo ===")
+
+print("Enter your name:")
+name = da5l()
+
+print("Enter your favorite color:")
+color = da5l()
+
+// Basic string operations
+print("\n1. Basic String Information:")
+print("Your name: '{name}'")
+print("Name length: {name.length()}")
+print("Your color: '{color}'")
+print("Color length: {color.length()}")
+
+// String interpolation
+print("\n2. String Interpolation:")
+message = "Hello {name}, I heard you like {color}!"
+print(message)
+
+// String case conversion
+print("\n3. Case Conversion:")
+upper_name = name.upper()
+lower_name = name.lower()
+upper_color = color.upper()
+
+print("Uppercase name: {upper_name}")
+print("Lowercase name: {lower_name}")
+print("Uppercase color: {upper_color}")
+
+// String searching
+print("\n4. String Contains Check:")
+if (name.contains("a") || name.contains("A")) {
+    print("Your name contains the letter 'A'")
+} else {
+    print("Your name does not contain the letter 'A'")
+}
+
+if (color.contains("e")) {
+    print("Your color contains the letter 'e'")
+} else {
+    print("Your color does not contain the letter 'e'")
+}
+
+// Input validation example
+print("\n5. Input Validation:")
+print("Enter a number:")
+input_str = da5l()
+
+if (input_str.isdigit()) {
+    number = int(input_str)
+    print("Valid number entered: {number}")
+    print("The number squared is: {number * number}")
+} else {
+    print("'{input_str}' is not a valid number")
+}
+
+// String building
+print("\n6. String Building:")
+full_info = "Name: " + name + ", Color: " + color
+print("Combined info: {full_info}")
+
+// Creating a simple pattern
+print("\n7. Creating Patterns:")
+pattern = ""
+for (i = 0; i < name.length(); i++) {
+    pattern = pattern + "*"
+}
+print("Star pattern for your name: {pattern}")
+print("Your name centered: {name}")
+print("Star pattern for your name: {pattern}")
+
+print("\nString manipulation demonstration complete!") 

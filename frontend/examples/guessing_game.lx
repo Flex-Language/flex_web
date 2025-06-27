@@ -1,0 +1,50 @@
+// Number Guessing Game
+
+print("=== Number Guessing Game ===")
+print("I'm thinking of a number between 1 and 100.")
+print("Can you guess what it is?")
+
+// The secret number (in a real game, this would be random)
+secret_number = 42
+
+print("\nEnter your guess:")
+guess = int(da5l())
+
+print("You guessed: {guess}")
+
+if (guess == secret_number) {
+    print("🎉 Congratulations! You guessed it!")
+    print("The number was indeed {secret_number}!")
+} else if (guess < secret_number) {
+    print("Too low! The number is higher than {guess}")
+    print("The secret number was {secret_number}")
+} else {
+    print("Too high! The number is lower than {guess}")
+    print("The secret number was {secret_number}")
+}
+
+// Let's also show some analysis
+difference = guess - secret_number
+if (difference < 0) {
+    difference = -difference
+}
+
+print("\nGame Analysis:")
+print("Your guess: {guess}")
+print("Secret number: {secret_number}")
+print("Difference: {difference}")
+
+if (difference == 0) {
+    print("Perfect! Exact match!")
+} else if (difference <= 5) {
+    print("Very close! You were within 5 numbers.")
+} else if (difference <= 10) {
+    print("Close! You were within 10 numbers.")
+} else if (difference <= 20) {
+    print("Not bad! You were within 20 numbers.")
+} else {
+    print("Keep practicing! You were off by {difference} numbers.")
+}
+
+print("\nThanks for playing the guessing game!")
+print("Try running this again with a different guess!") 

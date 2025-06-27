@@ -1117,18 +1117,23 @@ for (i = 0; i < 5; i++) {
             
             const title = document.createElement('h5');
             title.className = 'card-title';
-            title.textContent = example.name;
+            title.textContent = example.title || example.id || 'Untitled';
             
             const preview = document.createElement('div');
             preview.className = 'example-preview mb-3';
-            preview.textContent = example.content;
+            // Show first few lines of the content
+            const previewLines = example.content.split('\n').slice(0, 10).join('\n');
+            preview.textContent = previewLines + (example.content.split('\n').length > 10 ? '\n...' : '');
             
             const button = document.createElement('button');
             button.className = 'btn btn-primary';
-            button.textContent = 'Try it';
+            button.textContent = 'Load Example';
             button.addEventListener('click', function() {
                 // Set the editor content to this example
                 editor.setValue(example.content);
+                
+                // Show toast notification
+                showToast('Example Loaded', `${example.title || example.id} has been loaded into the editor`, 'success');
                 
                 // Switch to the compiler page
                 document.querySelector('[data-page="compiler"]').click();
@@ -1141,6 +1146,10 @@ for (i = 0; i < 5; i++) {
             col.appendChild(card);
             examplesContainer.appendChild(col);
         });
+        
+        if (examples.length === 0) {
+            examplesContainer.innerHTML = '<div class="alert alert-info">No examples available</div>';
+        }
     }
 
     // Function to load documentation

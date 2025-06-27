@@ -1,0 +1,73 @@
+// Functions Demonstration
+
+print("=== Flex Functions Demo ===")
+
+// Function without parameters
+function greet() {
+    print("Hello from a function!")
+}
+
+// Function with parameters and return value
+function add(a, b) {
+    return a + b
+}
+
+// Function with multiple parameters
+function calculate_area(width, height) {
+    area = width * height
+    print("Rectangle area: {width} x {height} = {area}")
+    return area
+}
+
+// Function for factorial calculation
+function factorial(n) {
+    if (n <= 1) {
+        return 1
+    }
+    result = 1
+    for (i = 2; i <= n; i++) {
+        result = result * i
+    }
+    return result
+}
+
+// Function to check if number is prime
+function is_prime(num) {
+    if (num < 2) {
+        return false
+    }
+    for (i = 2; i < num; i++) {
+        if (num % i == 0) {
+            return false
+        }
+    }
+    return true
+}
+
+// Test the functions
+print("\n1. Simple function call:")
+greet()
+
+print("\n2. Function with return value:")
+sum = add(15, 25)
+print("15 + 25 = {sum}")
+
+print("\n3. Function with multiple parameters:")
+area = calculate_area(8, 6)
+
+print("\n4. Recursive-style calculation:")
+print("Enter a number for factorial:")
+num = int(da5l())
+fact = factorial(num)
+print("Factorial of {num} is {fact}")
+
+print("\n5. Prime number checker:")
+print("Enter a number to check if it's prime:")
+test_num = int(da5l())
+if (is_prime(test_num)) {
+    print("{test_num} is a prime number!")
+} else {
+    print("{test_num} is not a prime number.")
+}
+
+print("\nFunctions demonstration complete!") 

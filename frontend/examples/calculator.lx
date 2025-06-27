@@ -1,0 +1,45 @@
+// Simple Calculator Example
+
+print("=== Simple Calculator ===")
+print("This program performs basic math operations")
+
+print("Enter first number:")
+a = int(da5l())
+
+print("Enter operator (+, -, *, /, %):")
+operator = da5l()
+
+print("Enter second number:")
+b = int(da5l())
+
+print("\nCalculating {a} {operator} {b}...")
+
+if (operator == "+") {
+    result = a + b
+    print("Addition: {a} + {b} = {result}")
+} else if (operator == "-") {
+    result = a - b
+    print("Subtraction: {a} - {b} = {result}")
+} else if (operator == "*") {
+    result = a * b
+    print("Multiplication: {a} * {b} = {result}")
+} else if (operator == "/") {
+    if (b != 0) {
+        result = a / b
+        print("Division: {a} / {b} = {result}")
+    } else {
+        print("Error: Division by zero is not allowed!")
+    }
+} else if (operator == "%") {
+    if (b != 0) {
+        result = a % b
+        print("Modulus: {a} % {b} = {result}")
+    } else {
+        print("Error: Modulus by zero is not allowed!")
+    }
+} else {
+    print("Error: Invalid operator '{operator}'")
+    print("Supported operators: +, -, *, /, %")
+}
+
+print("\nThank you for using the calculator!") 
