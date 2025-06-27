@@ -1,0 +1,259 @@
+# 🎨 Flex Language Syntax Highlighting Demo
+// This file demonstrates all syntax highlighting features
+
+/* 
+Multi-line comment showcasing 
+the beautiful new color scheme
+*/
+
+'''
+Python-style multi-line comment
+with proper gray italic styling
+'''
+
+// ==========================================
+// 📝 VARIABLE DECLARATIONS & TYPES
+// ==========================================
+
+// Arabic type keywords (Cyan with bold)
+rakm age = 25              // Integer type in Arabic
+kasr height = 5.9          // Float type in Arabic  
+so2al name = "Ahmed"       // String type in Arabic
+klma greeting = "مرحبا"    // Word type in Arabic
+dorg isActive = sa7        // Boolean type in Arabic
+
+// English type keywords (Cyan with bold)
+int score = 100
+float weight = 70.5
+bool status = true
+string message = "Hello World"
+list numbers = [1, 2, 3, 4, 5]
+
+// Boolean values (Green with bold)
+dorg ready = sa7           // Arabic true
+bool complete = ghalt      // Arabic false
+bool flag1 = true          // English true
+bool flag2 = false         // English false
+bool flag3 = True          // Python-style true
+bool flag4 = False         // Python-style false
+
+// ==========================================
+// 🔤 STRING INTERPOLATION SHOWCASE
+// ==========================================
+
+// String interpolation (Yellow strings with highlighted brackets)
+klma fullInfo = "Name: {name}, Age: {age}, Active: {isActive}"
+so2al calculation = "Sum of {score} and {age} is {score + age}"
+string complexExpr = "Result: {height * weight / 2.5 + 10}"
+
+// ==========================================
+// 📥📤 INPUT/OUTPUT FUNCTIONS
+// ==========================================
+
+// Print functions (Orange with bold)
+etb3("Arabic print function")      // Arabic print
+out("Output function")             // English out
+output("Extended output")          // English output
+print("Standard print")            // Standard print
+printf("Formatted: {score}")      // Printf style
+cout("C-style output")             // C++ style
+
+// Input functions (Orange with bold)
+klma userInput = scan()            // Arabic scan
+so2al response = read()            // English read
+string data = input()              // Standard input
+klma arabic1 = da5l()              // Arabic input variant 1
+string arabic2 = da5al()           // Arabic input variant 2
+klma arabic3 = d5l()               // Arabic input variant 3
+
+// ==========================================
+// 🔧 FUNCTION DEFINITIONS
+// ==========================================
+
+// Function keywords (Pink with bold)
+fun calculateSum(rakm a, int b) {              // English fun
+    rg3 a + b                                  // Arabic return
+}
+
+sndo2 greetUser(so2al userName) {              // Arabic function
+    etb3("Hello, {userName}!")
+    return "Greeting complete"                 // English return
+}
+
+sando2 multiply(x, y) {                        // Arabic function variant
+    rg3 x * y
+}
+
+fn factorial(rakm n) {                         // Short function
+    lw n <= 1 {
+        rg3 1
+    } gher {
+        return n * factorial(n - 1)
+    }
+}
+
+function processData(list data) {              // Standard function
+    for (rakm i = 0; i < data.length; i++) {
+        etb3("Processing: {data[i]}")
+    }
+}
+
+// ==========================================
+// 🔀 CONDITIONAL STATEMENTS
+// ==========================================
+
+// Arabic conditionals (Purple with bold)
+lw age >= 18 {                                 // Arabic if
+    etb3("Adult")
+} aw age >= 13 {                               // Arabic elif
+    etb3("Teenager") 
+} gher {                                       // Arabic else
+    etb3("Child")
+}
+
+// English conditionals (Purple with bold)
+if score > 90 {                                // English if
+    print("Excellent!")
+} elif score > 80 {                            // English elif
+    print("Very good!")
+} else {                                       // English else
+    print("Good effort!")
+}
+
+cond status == true {                          // Alternative if
+    output("Status active")
+} otherwise {                                  // Alternative else
+    output("Status inactive")
+}
+
+// ==========================================
+// 🔄 LOOP CONSTRUCTS
+// ==========================================
+
+// Arabic for loops (Purple with bold)
+karr i = 0 l7d 10 {                           // Arabic for with range
+    etb3("Arabic loop: {i}")
+}
+
+karr j l7d 5 {                                // Arabic for simplified
+    print("Counter: {j}")
+    
+    lw j == 3 {
+        w2f                                   // Arabic break
+    }
+}
+
+// English for loops (Purple with bold)
+for (rakm k = 0; k < numbers.length; k++) {  // Standard for loop
+    etb3("Element {k}: {numbers[k]}")
+}
+
+for (int m = 1; m <= 10; m++) {               // For with increment
+    klma msg = "Number: {m}"
+    print(msg)
+}
+
+// Arabic while loops (Purple with bold)
+rakm counter = 0
+talama counter < 5 {                          // Arabic while
+    etb3("Talama loop: {counter}")
+    counter++                                 // Operators in red
+}
+
+int limit = 3
+talma limit > 0 {                             // Arabic while variant
+    print("Countdown: {limit}")
+    limit--                                   // Decrement operator
+}
+
+// English while loops (Purple with bold)
+rakm index = 0
+while index < 10 {                            // English while
+    etb3("While loop: {index}")
+    index++
+    
+    if index == 7 {
+        break                                 // English break
+    }
+}
+
+int value = 20
+loop value > 0 {                              // Alternative while
+    print("Value: {value}")
+    value = value - 2
+}
+
+// ==========================================
+// 📊 MATHEMATICAL OPERATIONS
+// ==========================================
+
+// Operators (Red with bold)
+rakm a = 10
+int b = 20
+rakm sum = a + b                              // Addition
+int diff = b - a                              // Subtraction
+rakm product = a * b                          // Multiplication
+float division = b / a                        // Division
+a++                                           // Increment
+b--                                           // Decrement
+
+// Comparison operators (Red with bold)
+bool isEqual = a == b                         // Equality
+bool isNotEqual = a != b                      // Inequality
+bool isGreater = a > b                        // Greater than
+bool isLess = a < b                           // Less than
+bool isGreaterEqual = a >= b                  // Greater or equal
+bool isLessEqual = a <= b                     // Less or equal
+
+// ==========================================
+// 📂 IMPORT STATEMENTS
+// ==========================================
+
+// Import keywords (Cyan with italic)
+geep "math_utils.lx"                          // Arabic import
+geeb "string_helpers.lx"                      // Arabic import variant
+import "core_library.lx"                      // English import
+
+// ==========================================
+// 🔗 LIST OPERATIONS
+// ==========================================
+
+// Lists and indexing (Brackets in white)
+list fruits = ["apple", "banana", "orange"]   // List literal
+klma firstFruit = fruits[0]                   // Array access
+fruits[1] = "mango"                           // Array assignment
+list matrix = [[1, 2], [3, 4], [5, 6]]       // Nested lists
+int element = matrix[1][0]                    // Multi-dimensional access
+
+// ==========================================
+// 🎯 FUNCTION CALLS
+// ==========================================
+
+// Function calls (Cyan with bold for function names)
+rakm result1 = calculateSum(10, 20)          // Function call with args
+greetUser("Ali")                             // Void function call
+int result2 = multiply(5, 6)                 // Another function call
+string final = processData(numbers)          // Function with list arg
+
+// ==========================================
+// 💫 COMPLEX EXPRESSIONS
+// ==========================================
+
+// Complex mathematical expressions
+rakm complexCalc = (a + b) * 2 / 3 - 1
+bool condition = (age >= 18) && (score > 75)
+klma dynamic = "Result: {complexCalc > 50 ? 'HIGH' : 'LOW'}"
+
+// Nested function calls
+rakm nestedResult = calculateSum(multiply(5, 3), factorial(4))
+etb3("Final result: {nestedResult}")
+
+// Mixed Arabic and English in same expression
+lw calculateSum(rakm_value, int_value) > talama_limit {
+    etb3("Mixed language expression works!")
+} gher {
+    print("Fallback case")
+}
+
+// End of syntax highlighting demo
+print("🎨 Syntax highlighting demo complete!") 

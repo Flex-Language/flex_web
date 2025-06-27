@@ -364,3 +364,174 @@ body {
         right: 5%;
     }
 }
+
+/* ========================================= */
+/* FLEX LANGUAGE SYNTAX HIGHLIGHTING COLORS */
+/* ========================================= */
+
+/* Data Types - Purple/Blue tones for type keywords */
+.cm-s-dracula .cm-type {
+    color: #8be9fd !important;
+    /* Cyan - for type keywords like rakm, kasr, int, etc. */
+    font-weight: bold !important;
+}
+
+/* Boolean Values - Green tones for true/false values */
+.cm-s-dracula .cm-atom {
+    color: #50fa7b !important;
+    /* Green - for sa7, ghalt, true, false */
+    font-weight: bold !important;
+}
+
+/* Built-in Functions - Orange/Yellow tones for I/O functions */
+.cm-s-dracula .cm-builtin {
+    color: #ffb86c !important;
+    /* Orange - for etb3, scan, print, input, etc. */
+    font-weight: bold !important;
+}
+
+/* Function Definition Keywords - Pink tones */
+.cm-s-dracula .cm-def {
+    color: #ff79c6 !important;
+    /* Pink - for fun, sndo2, function, etc. */
+    font-weight: bold !important;
+}
+
+/* Control Flow Keywords - Purple tones */
+.cm-s-dracula .cm-keyword {
+    color: #bd93f9 !important;
+    /* Purple - for if, lw, for, while, return, etc. */
+    font-weight: bold !important;
+}
+
+/* Import Statements - Light blue/cyan */
+.cm-s-dracula .cm-meta {
+    color: #8be9fd !important;
+    /* Cyan - for geep, import, etc. */
+    font-style: italic !important;
+}
+
+/* String Interpolation Brackets - Bright yellow */
+.cm-s-dracula .cm-string-2 {
+    color: #f1fa8c !important;
+    /* Yellow - for { } in string interpolation */
+    font-weight: bold !important;
+    background-color: rgba(241, 250, 140, 0.1) !important;
+    /* Subtle background */
+}
+
+/* Variables - White (default) */
+.cm-s-dracula .cm-variable {
+    color: #f8f8f2 !important;
+    /* White - for variable names */
+}
+
+/* Function Names when called - Light cyan */
+.cm-s-dracula .cm-variable-2 {
+    color: #8be9fd !important;
+    /* Cyan - for function names in calls */
+    font-weight: bold !important;
+}
+
+/* Operators - Red tones */
+.cm-s-dracula .cm-operator {
+    color: #ff5555 !important;
+    /* Red - for +, -, *, /, ==, etc. */
+    font-weight: bold !important;
+}
+
+/* Numbers - Purple tones */
+.cm-s-dracula .cm-number {
+    color: #bd93f9 !important;
+    /* Purple - for numeric literals */
+}
+
+/* Strings - Yellow tones */
+.cm-s-dracula .cm-string {
+    color: #f1fa8c !important;
+    /* Yellow - for string literals */
+}
+
+/* Comments - Gray tones */
+.cm-s-dracula .cm-comment {
+    color: #6272a4 !important;
+    /* Gray - for comments */
+    font-style: italic !important;
+}
+
+/* Brackets and Punctuation - Light gray */
+.cm-s-dracula .cm-bracket {
+    color: #f8f8f2 !important;
+    /* White - for brackets */
+    font-weight: bold !important;
+}
+
+.cm-s-dracula .cm-punctuation {
+    color: #f8f8f2 !important;
+    /* White - for commas, semicolons */
+}
+
+/* Enhanced visibility for Arabic keywords */
+.cm-s-dracula .cm-keyword:lang(ar),
+.cm-s-dracula .cm-type:lang(ar),
+.cm-s-dracula .cm-builtin:lang(ar) {
+    text-decoration: underline !important;
+    text-decoration-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Special highlighting for Flex-specific constructs */
+.cm-s-dracula .cm-flex-arabic {
+    color: #50fa7b !important;
+    /* Green for Arabic keywords */
+    font-weight: bold !important;
+    text-shadow: 0 0 2px rgba(80, 250, 123, 0.3) !important;
+}
+
+/* Matching brackets highlighting enhancement */
+.cm-s-dracula .CodeMirror-matchingbracket {
+    color: #f1fa8c !important;
+    background-color: rgba(241, 250, 140, 0.2) !important;
+    font-weight: bold !important;
+}
+
+/* Error highlighting for syntax errors */
+.cm-s-dracula .cm-error {
+    color: #ff5555 !important;
+    background-color: rgba(255, 85, 85, 0.2) !important;
+    text-decoration: underline !important;
+    text-decoration-color: #ff5555 !important;
+}
+
+/* Additional contrast for better readability */
+.CodeMirror.cm-s-dracula {
+    background-color: #282a36 !important;
+}
+
+.cm-s-dracula .CodeMirror-gutters {
+    background-color: #282a36 !important;
+    border-right: 1px solid #44475a !important;
+}
+
+.cm-s-dracula .CodeMirror-linenumber {
+    color: #6272a4 !important;
+}
+
+.cm-s-dracula .CodeMirror-cursor {
+    border-left: 2px solid #f8f8f2 !important;
+}
+
+/* Selection highlighting */
+.cm-s-dracula .CodeMirror-selected {
+    background-color: #44475a !important;
+}
+
+.cm-s-dracula .CodeMirror-line::selection,
+.cm-s-dracula .CodeMirror-line>span::selection,
+.cm-s-dracula .CodeMirror-line>span>span::selection {
+    background-color: #44475a !important;
+}
+
+/* Active line highlighting */
+.cm-s-dracula .CodeMirror-activeline-background {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}

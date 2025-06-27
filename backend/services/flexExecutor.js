@@ -57,7 +57,8 @@ class FlexExecutor {
                 env: {
                     ...process.env,
                     // Make sure any environment variables needed by the compiler are set
-                    USE_AI: process.env.USE_FLEX_AI || 'false'
+                    USE_AI: process.env.USE_FLEX_AI || 'false',
+                    PYTHONUNBUFFERED: '1' // Ensure Python output is completely unbuffered
                 },
                 stdio: ['pipe', 'pipe', 'pipe'] // Make stdin, stdout, stderr all pipes
             });
@@ -161,20 +162,46 @@ class FlexExecutor {
             message.includes('scan()') ||
             message.includes('da5l()'); // Additional checks for scan function
 
+        // Check if this message should be filtered out (input/output tokens)
+        const shouldFilter =
+            message.trim() === constants.INPUT_REQUEST_TOKEN ||
+            message.trim() === constants.INPUT_RECEIVED_TOKEN ||
+            message.includes(constants.INPUT_REQUEST_TOKEN) ||
+            message.includes(constants.INPUT_RECEIVED_TOKEN);
+
         if (isInputRequest) {
             this.handleInputRequest(execution, output);
-        } else {
+        } else if (!shouldFilter) {
+            // Only process non-filtered messages
             // For regular output, add to output buffer
             output.push(message);
 
-            // Store pending output in case an input request follows
+            // Store pending output in case an input request follows or client registers late
             if (!execution.pendingOutput) {
                 execution.pendingOutput = [];
             }
             execution.pendingOutput.push(message);
 
-            // If a client is connected, send the output in real-time
-            this.sendOutputToClient(execution, message);
+            // Send output to the registered client or broadcast if no client registered
+            if (execution.clientId && websocketManager.getAllClients().has(execution.clientId)) {
+                // Send to specific registered client
+                this.sendOutputToClient(execution, message);
+            } else {
+                // Broadcast to all clients if no specific client is registered
+                websocketManager.getAllClients().forEach((ws, clientId) => {
+                    if (ws.readyState === 1) { // WebSocket.OPEN
+                        websocketManager.safelySendMessage(ws, {
+                            type: 'output',
+                            executionId: execution.executionId,
+                            data: message,
+                            broadcast: true
+                        });
+                    }
+                });
+            }
+        } else {
+            // Filtered message - just log it but don't send to client
+            logger.info(`Filtered out token from output: "${message.trim()}"`);
         }
     }
 
@@ -220,27 +247,19 @@ class FlexExecutor {
         const pendingOutput = execution.pendingOutput || [];
         if (pendingOutput.length > 0) {
             output.push(...pendingOutput);
+            logger.info(`Added ${pendingOutput.length} pending output messages to output buffer for execution ${execution.executionId}`);
 
-            // Send any pending output to the client before the input request
-            if (execution.clientId && websocketManager.getAllClients().has(execution.clientId)) {
-                const ws = websocketManager.getAllClients().get(execution.clientId);
-                if (ws.readyState === 1) { // WebSocket.OPEN
-                    pendingOutput.forEach(outputMsg => {
-                        websocketManager.safelySendMessage(ws, {
-                            type: 'output',
-                            executionId: execution.executionId,
-                            data: outputMsg
-                        });
-                    });
-                }
-            }
-
-            // Clear pending output after sending
+            // Clear pending output to prevent duplication - output was already sent in real-time
             execution.pendingOutput = [];
+        } else {
+            logger.info(`No pending output to process for execution ${execution.executionId}`);
         }
 
-        // Notify the client via WebSocket
-        this.notifyClientForInput(execution);
+        // Add a small delay to ensure output is processed before input request
+        setTimeout(() => {
+            // Notify the client via WebSocket
+            this.notifyClientForInput(execution);
+        }, 100); // 100ms delay to ensure output is processed first
     }
 
     /**

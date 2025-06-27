@@ -121,13 +121,44 @@ class WebSocketManager {
             execution.clientId = clientId;
             logger.info(`Registered client ${clientId} for execution ${executionId}`);
 
+            // Send confirmation to client immediately
+            this.safelySendMessage(ws, {
+                type: 'registration_confirmed',
+                executionId: executionId,
+                status: execution.state || 'running',
+                timestamp: Date.now()
+            });
+
             // If the execution is already waiting for input, notify the client immediately
             if (execution.waitingForInput) {
                 this.sendInputRequestToClient(ws, executionId, 0);
                 logger.info(`Sent input_request to client ${clientId} (immediate notification)`);
             }
+
+            // If there's pending output that wasn't sent yet, send it now
+            if (execution.pendingOutput && execution.pendingOutput.length > 0) {
+                logger.info(`Sending ${execution.pendingOutput.length} pending output messages to newly registered client`);
+                execution.pendingOutput.forEach((outputMsg, index) => {
+                    this.safelySendMessage(ws, {
+                        type: 'output',
+                        executionId: executionId,
+                        data: outputMsg,
+                        sequence: index,
+                        delayed: true // Mark as delayed output
+                    });
+                });
+
+                // Clear pending output after sending to prevent duplication
+                execution.pendingOutput = [];
+            }
         } else {
             logger.warn(`Client ${clientId} tried to register for unknown execution ${executionId}`);
+            // Send error response to client
+            this.safelySendMessage(ws, {
+                type: 'registration_error',
+                executionId: executionId,
+                error: 'Execution not found'
+            });
         }
     }
 
@@ -144,6 +175,10 @@ class WebSocketManager {
             if (execution.waitingForInput && execution.pyProcess) {
                 logger.info(`Received input for execution ${executionId}: "${input}"`);
                 executionManager.setWaitingForInput(executionId, false);
+
+                // Reset input request flags to allow future input requests
+                execution.inputRequestSent = false;
+                execution.inputRequestBroadcast = false;
 
                 // Send the input to the Python process
                 try {
@@ -243,9 +278,9 @@ class WebSocketManager {
     }
 
     /**
-     * Send input request to client with retries
+     * Send input request to client (single attempt)
      */
-    sendInputRequestToClient(ws, executionId, attempt) {
+    sendInputRequestToClient(ws, executionId, attempt = 0) {
         try {
             // Get execution state if available
             let state = 'waiting_input';
@@ -255,6 +290,15 @@ class WebSocketManager {
                 const execution = executionManager.getExecution(executionId);
                 state = execution.state || 'waiting_input';
                 prompt = execution.inputPrompt || 'Input required';
+
+                // Check if we already sent an input request for this execution
+                if (execution.inputRequestSent) {
+                    logger.info(`Input request already sent for execution ${executionId}, skipping`);
+                    return;
+                }
+
+                // Mark that we've sent an input request
+                execution.inputRequestSent = true;
             }
 
             // Skip if execution has completed
@@ -263,26 +307,18 @@ class WebSocketManager {
                 return;
             }
 
-            // Send with a priority flag to ensure it's processed correctly
+            // Send input request (only once)
             const success = this.safelySendMessage(ws, {
                 type: 'input_request',
                 priority: true,
                 executionId: executionId,
                 timestamp: Date.now(),
-                attempt: attempt,
                 status: state,
                 prompt: prompt
             });
 
             if (success) {
-                logger.info(`Sent input_request to client for execution ${executionId} (attempt ${attempt})`);
-            }
-
-            // Retry a few times with exponential backoff to ensure delivery
-            if (attempt < 2 && !executionManager.isExecutionCompleted(executionId)) {
-                setTimeout(() => {
-                    this.sendInputRequestToClient(ws, executionId, attempt + 1);
-                }, 1000 * Math.pow(2, attempt)); // 1s, 2s, 4s backoff
+                logger.info(`Sent input_request to client for execution ${executionId}`);
             }
         } catch (err) {
             logger.error(`Error sending input request: ${err.message}`);
@@ -290,16 +326,27 @@ class WebSocketManager {
     }
 
     /**
-     * Broadcast input request to all clients
+     * Broadcast input request to all clients (single attempt)
      */
     broadcastInputRequest(executionId) {
-        logger.warn(`No client connected for execution ${executionId}, broadcasting input request`);
-
         let state = 'waiting_input';
+        let alreadyBroadcast = false;
+
         if (executionManager.hasExecution(executionId)) {
             const execution = executionManager.getExecution(executionId);
             state = execution.state || 'waiting_input';
+
+            // Check if we already broadcast for this execution
+            if (execution.inputRequestBroadcast) {
+                logger.info(`Input request already broadcast for execution ${executionId}, skipping`);
+                return;
+            }
+
+            // Mark that we've broadcast an input request
+            execution.inputRequestBroadcast = true;
         }
+
+        logger.warn(`No client connected for execution ${executionId}, broadcasting input request`);
 
         this.wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {

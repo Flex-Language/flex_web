@@ -158,7 +158,7 @@ This is a **Flex Online Compiler** - a web-based IDE and execution environment f
 
 ## Flex Programming Language Documentation
 
-> **Reference**: [Flex Language Documentation](https://deepwiki.com/Flex-Language/Flex)
+> **Reference**: [Flex Language Documentation](mdc:https:/deepwiki.com/Flex-Language/Flex)
 
 ### **Language Overview**
 Flex is a modern programming language designed for simplicity and performance. This online compiler provides a complete development environment with real-time execution and interactive capabilities.

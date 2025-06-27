@@ -1,10 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const http = require('http');
+const path = require('path');
 const dotenv = require('dotenv');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from project root
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Import configuration
 const constants = require('./config/constants');
