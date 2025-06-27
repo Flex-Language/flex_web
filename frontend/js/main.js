@@ -1100,10 +1100,17 @@ for (i = 0; i < 5; i++) {
     const shortcutsPanel = document.getElementById('shortcuts-panel');
     const shortcutsClose = document.getElementById('shortcuts-close');
 
-    shortcutsLink.addEventListener('click', function (e) {
-        e.preventDefault();
-        shortcutsPanel.classList.toggle('show');
-    });
+    if (shortcutsLink && shortcutsPanel) {
+        shortcutsLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Shortcuts button clicked - preventing default navigation');
+            shortcutsPanel.classList.toggle('show');
+            return false;
+        });
+    } else {
+        console.error('Shortcuts elements not found:', { shortcutsLink, shortcutsPanel });
+    }
 
     shortcutsClose.addEventListener('click', function () {
         shortcutsPanel.classList.remove('show');
