@@ -20,9 +20,10 @@ This is a **Flex Online Compiler** - a web-based IDE and execution environment f
 ├── .cursor
 │   └── rules
 │       └── layout.mdc                 # This documentation file
+├── .env                              # Environment variables
+├── .env.example                      # Environment variables template
 ├── .gitignore                         # Git ignore patterns
 ├── backend/                           # Node.js Backend Services
-│   ├── .env                          # Environment variables
 │   ├── .gitignore                    # Backend-specific ignores
 │   ├── bun.lock                      # Bun package lock file
 │   ├── config/                       # Configuration modules

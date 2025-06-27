@@ -37,9 +37,9 @@ mkdir -p backend/temp logs
 
 # Set production environment
 echo "Setting production environment..."
-if [ ! -f backend/.env ]; then
+if [ ! -f .env ]; then
     echo "Creating .env file..."
-    cat > backend/.env << EOF
+    cat > .env << EOF
 PORT=3000
 NODE_ENV=production
 PYTHON_PATH=python3
@@ -52,8 +52,8 @@ UV_THREADPOOL_SIZE=8
 EOF
 else
     # Update existing .env file
-    sed -i 's/NODE_ENV=development/NODE_ENV=production/' backend/.env
-    sed -i 's/PORT=80/PORT=3000/' backend/.env
+    sed -i 's/NODE_ENV=development/NODE_ENV=production/' .env
+    sed -i 's/PORT=80/PORT=3000/' .env
 fi
 
 # Check permissions for log directories

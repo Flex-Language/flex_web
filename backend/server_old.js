@@ -15,8 +15,8 @@ const { v4: uuidv4 } = require('uuid');
 const { spawn } = require('child_process');
 const webhookRouter = require('./webhook'); // Import the webhook router
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from project root
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Initialize Express app
 const app = express();
