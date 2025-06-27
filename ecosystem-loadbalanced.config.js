@@ -2,7 +2,8 @@ module.exports = {
     apps: [
         {
             name: 'flex-web-3000',
-            script: './backend/server.js',
+            script: './server.js',
+            cwd: './backend',
             instances: 1,
             exec_mode: 'fork',
             autorestart: true,
@@ -32,7 +33,8 @@ module.exports = {
         },
         {
             name: 'flex-web-3001',
-            script: './backend/server.js',
+            script: './server.js',
+            cwd: './backend',
             instances: 1,
             exec_mode: 'fork',
             autorestart: true,
@@ -62,7 +64,8 @@ module.exports = {
         },
         {
             name: 'flex-web-3002',
-            script: './backend/server.js',
+            script: './server.js',
+            cwd: './backend',
             instances: 1,
             exec_mode: 'fork',
             autorestart: true,
@@ -92,7 +95,8 @@ module.exports = {
         },
         {
             name: 'flex-web-3003',
-            script: './backend/server.js',
+            script: './server.js',
+            cwd: './backend',
             instances: 1,
             exec_mode: 'fork',
             autorestart: true,
