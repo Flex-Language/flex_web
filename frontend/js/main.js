@@ -97,6 +97,40 @@ for (i = 0; i < 5; i++) {
     toastContainer.id = 'toast-container';
     document.body.appendChild(toastContainer);
 
+    // Global keyboard shortcut handler to prevent unwanted browser behavior
+    document.addEventListener('keydown', function (e) {
+        // Handle Ctrl+S to prevent browser save dialog
+        if (e.ctrlKey && e.key === 's') {
+            // Only prevent default if the editor has focus or if no specific input is focused
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement && (
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA' ||
+                activeElement.contentEditable === 'true'
+            );
+
+            // If it's our code editor area or no input is focused, let CodeMirror handle it
+            if (!isInputFocused || activeElement.closest('.CodeMirror')) {
+                e.preventDefault();
+                console.log('Prevented Ctrl+S browser save dialog');
+                return false;
+            }
+        }
+
+        // Handle other potentially problematic shortcuts
+        if (e.ctrlKey) {
+            switch (e.key) {
+                case 'Enter':
+                    // Let CodeMirror handle Ctrl+Enter for run
+                    if (document.activeElement && document.activeElement.closest('.CodeMirror')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    break;
+            }
+        }
+    });
+
     // Add a share button to the toolbar
     const toolbar = document.querySelector('.editor-card .card-header .btn-group');
     const shareButton = document.createElement('button');
@@ -118,8 +152,39 @@ for (i = 0; i < 5; i++) {
     toolbar.appendChild(shareButton);
 
     // Set up navigation between pages
-    const navLinks = document.querySelectorAll('.nav-link');
+    const navLinks = document.querySelectorAll('.nav-link[data-page]'); // Only select nav links with data-page attribute
     const pages = document.querySelectorAll('.page');
+
+    // Function to navigate to a specific page
+    function navigateToPage(pageToShow, clickedElement = null) {
+        // Remove active class from all nav links
+        navLinks.forEach(link => link.classList.remove('active'));
+
+        // Add active class to the appropriate nav link (not the clicked element if it's the brand)
+        if (clickedElement && clickedElement.getAttribute('data-page')) {
+            clickedElement.classList.add('active');
+        } else {
+            // If navigating via brand or programmatically, find and activate the appropriate nav link
+            const targetNavLink = document.querySelector(`[data-page="${pageToShow}"]`);
+            if (targetNavLink) {
+                targetNavLink.classList.add('active');
+            }
+        }
+
+        // Hide all pages and show the selected page
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(`${pageToShow}-page`).classList.add('active');
+
+        // If we're switching to examples page, load examples if not already loaded
+        if (pageToShow === 'examples' && !document.querySelector('.example-card')) {
+            loadExamples();
+        }
+
+        // If we're switching to documentation page, load documentation list from GitHub if not already loaded
+        if (pageToShow === 'documentation' && !document.querySelector('#documentation-links .doc-link')) {
+            loadDocumentationList();
+        }
+    }
 
     navLinks.forEach(link => {
         link.addEventListener('click', function (e) {
@@ -127,26 +192,22 @@ for (i = 0; i < 5; i++) {
 
             // Get the page to show from data attribute
             const pageToShow = this.getAttribute('data-page');
-
-            // Remove active class from all links and add to clicked link
-            navLinks.forEach(link => link.classList.remove('active'));
-            this.classList.add('active');
-
-            // Hide all pages and show the selected page
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(`${pageToShow}-page`).classList.add('active');
-
-            // If we're switching to examples page, load examples if not already loaded
-            if (pageToShow === 'examples' && !document.querySelector('.example-card')) {
-                loadExamples();
-            }
-
-            // If we're switching to documentation page, load documentation list from GitHub if not already loaded
-            if (pageToShow === 'documentation' && !document.querySelector('#documentation-links .doc-link')) {
-                loadDocumentationList();
-            }
+            navigateToPage(pageToShow, this);
         });
     });
+
+    // Make the navbar brand clickable to go to compiler page
+    const navbarBrand = document.querySelector('.navbar-brand');
+    if (navbarBrand) {
+        navbarBrand.addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log('Navbar brand clicked - navigating to compiler page');
+            navigateToPage('compiler');
+        });
+
+        // Add a subtle visual hint that it's clickable
+        navbarBrand.style.cursor = 'pointer';
+    }
 
     // Initialize WebSocket for real-time communication - New Addition
     let socket = null;
@@ -1101,20 +1162,29 @@ for (i = 0; i < 5; i++) {
     const shortcutsClose = document.getElementById('shortcuts-close');
 
     if (shortcutsLink && shortcutsPanel) {
-        shortcutsLink.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Shortcuts button clicked - preventing default navigation');
-            shortcutsPanel.classList.toggle('show');
-            return false;
+        // Add multiple event listeners to ensure we catch all possible triggers
+        ['click', 'touchstart'].forEach(eventType => {
+            shortcutsLink.addEventListener(eventType, function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+
+                console.log('Shortcuts panel toggled - prevented default navigation');
+                shortcutsPanel.classList.toggle('show');
+                return false;
+            }, { passive: false });
         });
     } else {
         console.error('Shortcuts elements not found:', { shortcutsLink, shortcutsPanel });
     }
 
-    shortcutsClose.addEventListener('click', function () {
-        shortcutsPanel.classList.remove('show');
-    });
+    if (shortcutsClose) {
+        shortcutsClose.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            shortcutsPanel.classList.remove('show');
+        });
+    }
 
     // Close shortcuts panel when clicking outside of it
     document.addEventListener('click', function (event) {
@@ -1170,11 +1240,21 @@ for (i = 0; i < 5; i++) {
                         <i class="bi bi-exclamation-triangle"></i>
                         <strong>GitHub Streaming Error:</strong> ${error.message}
                         <br><small>Unable to fetch examples from GitHub repository in real-time.</small>
-                        <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadExamples()">
+                        <button class="btn btn-sm btn-outline-danger mt-2 retry-examples-btn">
                             <i class="bi bi-arrow-clockwise"></i> Retry GitHub Connection
                         </button>
                     </div>
                 `;
+
+                // Add event listener for retry button
+                const retryBtn = examplesContainer.querySelector('.retry-examples-btn');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log('Retrying examples load from GitHub');
+                        loadExamples();
+                    });
+                }
             });
     }
 
@@ -1263,11 +1343,21 @@ for (i = 0; i < 5; i++) {
                         <i class="bi bi-exclamation-triangle"></i>
                         <strong>GitHub Streaming Error:</strong> ${error.message}
                         <br><small>Unable to fetch documentation list from GitHub repository.</small>
-                        <button class="btn btn-sm btn-outline-danger mt-2" onclick="loadDocumentationList()">
+                        <button class="btn btn-sm btn-outline-danger mt-2 retry-doclist-btn">
                             <i class="bi bi-arrow-clockwise"></i> Retry GitHub Connection
                         </button>
                     </div>
                 `;
+
+                // Add event listener for retry button
+                const retryBtn = docLinksContainer.querySelector('.retry-doclist-btn');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log('Retrying documentation list load from GitHub');
+                        loadDocumentationList();
+                    });
+                }
             });
     }
 
@@ -1297,13 +1387,7 @@ for (i = 0; i < 5; i++) {
             const displayTitle = doc.title || doc.id.replace(/[-_]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
             linkElement.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
-                    <span>${displayTitle}</span>
-                    <div>
-                        <small class="text-muted">${doc.filename}</small>
-                        ${doc.size ? `<small class="text-muted ms-2">(${Math.round(doc.size / 1024)}KB)</small>` : ''}
-                    </div>
-                </div>
+                <span>${displayTitle}</span>
             `;
 
             // Add click event listener
@@ -1367,13 +1451,27 @@ for (i = 0; i < 5; i++) {
                 <div class="alert alert-info alert-dismissible fade show">
                     <i class="bi bi-info-circle"></i>
                     Content loaded from GitHub cache. 
-                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="loadDocumentation('${docFile}')">
+                    <button class="btn btn-sm btn-outline-primary ms-2 refresh-doc-btn" data-doc-file="${docFile}">
                         <i class="bi bi-arrow-clockwise"></i> Refresh from GitHub
                     </button>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
                 ${parsedContent}
             `;
+
+            // Add event listener for the refresh button
+            const refreshBtn = docContent.querySelector('.refresh-doc-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    // Clear the cached version to force fresh load
+                    if (window.preloadedDocs && window.preloadedDocs[docFile]) {
+                        delete window.preloadedDocs[docFile];
+                    }
+                    console.log('Refreshing documentation from GitHub:', docFile);
+                    loadDocumentation(docFile);
+                });
+            }
             return;
         }
 
@@ -1421,15 +1519,34 @@ for (i = 0; i < 5; i++) {
                             <small>Unable to fetch documentation from GitHub repository in real-time.</small>
                         </p>
                         <div class="mt-3">
-                            <button class="btn btn-outline-danger" onclick="loadDocumentation('${docFile}')">
+                            <button class="btn btn-outline-danger retry-doc-btn" data-doc-file="${docFile}">
                                 <i class="bi bi-arrow-clockwise"></i> Retry GitHub Connection
                             </button>
-                            <button class="btn btn-outline-secondary ms-2" onclick="window.open('https://github.com/Flex-Language/Flex_docs_examples', '_blank')">
+                            <button class="btn btn-outline-secondary ms-2 github-link-btn">
                                 <i class="bi bi-github"></i> View on GitHub
                             </button>
                         </div>
                     </div>
                 `;
+
+                // Add event listeners for the buttons
+                const retryBtn = docContent.querySelector('.retry-doc-btn');
+                const githubBtn = docContent.querySelector('.github-link-btn');
+
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        console.log('Retrying documentation load from GitHub:', docFile);
+                        loadDocumentation(docFile);
+                    });
+                }
+
+                if (githubBtn) {
+                    githubBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        window.open('https://github.com/Flex-Language/Flex_docs_examples', '_blank');
+                    });
+                }
             });
     }
 
