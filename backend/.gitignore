@@ -1,34 +1,228 @@
-# dependencies (bun install)
-node_modules
+# =====================================
+# FLEX WEB BACKEND - SPECIFIC .GITIGNORE
+# =====================================
+# Note: Root .gitignore handles global patterns
 
-# output
-out
-dist
-*.tgz
+# ============ BACKEND DEPENDENCIES ============
+# Node.js modules (backend specific)
+node_modules/
 
-# code coverage
-coverage
-*.lcov
+# Bun files
+bun.lockb
+.bun/
 
-# logs
-logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+# ============ BACKEND BUILD & OUTPUT ============
+# Build output directories
+out/
+dist/
+build/
+compiled/
 
-# dotenv environment variable files
+# Transpiled files
+*.js.map
+*.d.ts
+
+# Bundled files
+bundle/
+*.bundle.js
+*.chunk.js
+
+# ============ BACKEND LOGS ============
+# Application logs (backend specific)
+logs/
+*.log
+combined.log
+error.log
+access.log
+webhook.log
+webhook-error.log
+flex-executor.log
+server.log
+
+# PM2 logs
+pm2-logs/
+pm2-runtime.log
+
+# Debug logs
+debug-*.log
+
+# ============ BACKEND ENVIRONMENT ============
+# Backend environment files
 .env
+.env.local
 .env.development.local
 .env.test.local
 .env.production.local
-.env.local
+.env.backend
 
-# caches
-.eslintcache
-.cache
+# ============ BACKEND TEMP & CACHE ============
+# Temporary execution files
+temp/
+tmp/
+.tmp/
+execution-temp/
+
+# Flex execution cache
+.flex-cache/
+*.flex.cache
+
+# Code execution temporary files
+exec-*/
+run-*/
+compile-*/
+
+# Upload temporary files
+uploads/temp/
+uploads/tmp/
+
+# ============ BACKEND RUNTIME ============
+# Process files
+*.pid
+*.seed
+*.pid.lock
+
+# PM2 ecosystem backups
+ecosystem.*.config.js.bak
+pm2.config.js.bak
+
+# Session files
+sessions/
+*.session
+
+# Socket files
+*.sock
+
+# ============ BACKEND TESTING ============
+# Test coverage (backend)
+coverage/
+.nyc_output/
+test-results/
+*.coverage
+
+# Jest cache
+.jest/
+
+# Mocha results
+mochawesome-report/
+
+# ============ BACKEND SECURITY ============
+# Private keys and certificates
+private/
+*.pem
+*.key
+*.p12
+*.pfx
+*.csr
+
+# Configuration with secrets
+config/secrets.js
+config/database.js
+config/production.js
+
+# Authentication files
+auth/private.key
+auth/*.pem
+
+# ============ FLEX LANGUAGE SPECIFIC ============
+# Flex compiler temporary files
+*.lx.tmp
+*.lx.compile
+*.lx.exec
+*.lx.error
+
+# Flex runtime files
+flex-runtime/
+.flex-state/
+
+# Compiled Flex programs
+compiled-flex/
+flex-output/
+
+# Flex execution traces
+*.trace
+execution-logs/
+
+# ============ DATABASE ============
+# Local database files
+*.db
+*.sqlite
+*.sqlite3
+database.json
+
+# Database backups
+*.sql.backup
+db-backup/
+
+# ============ DEVELOPMENT ============
+# Development utilities
+dev-utils/
+debug/
+profiling/
+
+# Local development overrides
+local.config.js
+local.settings.json
+dev.config.js
+
+# ============ MONITORING & METRICS ============
+# Monitoring data
+metrics/
+monitoring/
+*.metrics
+
+# Performance profiles
+*.prof
+profiles/
+
+# Health check temporary files
+health-check-*
+
+# ============ BACKEND DEPLOYMENT ============
+# Docker compose overrides
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Kubernetes local configs
+k8s-local/
+*.local.yaml
+
+# Deployment scripts with secrets
+deploy/secrets/
+deployment/local/
+
+# ============ CACHES & OPTIMIZATION ============
+# TypeScript cache
 *.tsbuildinfo
 
-# IntelliJ based IDEs
-.idea
+# ESLint cache
+.eslintcache
 
-# Finder (MacOS) folder config
+# Babel cache
+.babel-cache/
+
+# SWC cache
+.swc/
+
+# ============ MISCELLANEOUS BACKEND ============
+# Editor specific to backend
+.vscode/launch.json
+.vscode/tasks.json
+
+# OS specific in backend
 .DS_Store
+Thumbs.db
+
+# Archive files
+*.tar.gz
+*.zip
+
+# Backup files
+*.backup
+*.old
+*~
+
+# ============ KEEP LAST - LOCAL OVERRIDES ============
+# Any local configuration
+*.local
+local.*
+dev.*
