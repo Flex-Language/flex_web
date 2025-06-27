@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Online Compiler</title>
+
+    <!-- CodeMirror for code editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/theme/dracula.min.css">
+
+    <!-- Modern Design CSS -->
+    <link rel="stylesheet" href="css/inspired.css">
+
+    <!-- Modern Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+</head>
+
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">⚡</span>
+                Flex Online Compiler
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active">Compiler</a></li>
+                <li><a href="#" class="nav-link">Examples</a></li>
+                <li><a href="#" class="nav-link">Documentation</a></li>
+            </ul>
+
+            <button class="shortcuts-btn">
+                <span>⌨️</span>
+                Shortcuts
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Panel - Code Editor -->
+        <div class="panel editor-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="editor-icon">💻</span>
+                    Flex Code Editor
+                </div>
+                <div class="action-buttons">
+                    <button id="run-btn" class="btn btn-primary">
+                        <span>▶</span>
+                        Run
+                    </button>
+                    <button id="clear-btn" class="btn btn-secondary">
+                        <span>🗑️</span>
+                        Clear
+                    </button>
+                    <button id="save-btn" class="btn btn-info">
+                        <span>💾</span>
+                        Save
+                    </button>
+                </div>
+            </div>
+            <div class="editor-container">
+                <textarea id="code-editor">// Welcome to Flex Online Compiler
+// Try running this sample code:
+
+rakm x = 19
+y = 2
+z = x+y
+
+print("Sum of {x} and {y} is {z}")
+
+for (i = 1; i < 5; i++) {
+    print("Loop iteration: {i}")</textarea>
+            </div>
+        </div>
+
+        <!-- Right Panel - Output -->
+        <div class="panel output-panel">
+            <!-- Connection Status -->
+            <div class="connection-status">
+                <div class="status-indicator" id="status-dot"></div>
+                <span class="status-text" id="status-text">Connected</span>
+                <div class="execution-badge" id="execution-status">Idle</div>
+            </div>
+
+            <!-- Output Header -->
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="output-icon">📺</span>
+                    Output
+                </div>
+                <button id="clear-output-btn" class="btn btn-secondary">
+                    <span>🗑️</span>
+                    Clear
+                </button>
+            </div>
+
+            <!-- Output Console -->
+            <div class="output-container">
+                <div id="output-area" class="output-area">
+                    <div class="welcome-message">
+                        <span class="welcome-icon">🔗</span>
+                        <span class="welcome-text">WebSocket connected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Program Input Section -->
+            <div class="input-section">
+                <div class="input-header">
+                    <div class="input-title">
+                        <span class="input-icon">⌨️</span>
+                        Program Input
+                    </div>
+                    <div class="input-status" id="input-status">Not waiting for input</div>
+                </div>
+                <div class="input-container">
+                    <input type="text" id="input-field" class="input-field" placeholder="Enter input..." disabled>
+                    <button id="send-input-btn" class="btn btn-send" disabled>
+                        <span>📤</span>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/addon/edit/matchbrackets.min.js"></script>
+    <script src="js/flex-mode.js"></script>
+    <script src="js/inspired.js"></script>
+</body>
+
+</html>
