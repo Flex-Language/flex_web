@@ -1,0 +1,658 @@
+/* ========================================= */
+/* MODERN FLEX ONLINE COMPILER DESIGN      */
+/* Inspired by modern IDE interfaces        */
+/* ========================================= */
+
+:root {
+    --primary-bg: #1a1d29;
+    --secondary-bg: #242840;
+    --tertiary-bg: #2a2f4a;
+    --accent-green: #00d26a;
+    --accent-blue: #3d7eff;
+    --accent-purple: #8b5cf6;
+    --text-primary: #ffffff;
+    --text-secondary: #a8b4d1;
+    --text-muted: #6b7280;
+    --border-color: #374151;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
+    --success-color: #10b981;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================= */
+/* GLOBAL STYLES                            */
+/* ========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ========================================= */
+/* NAVIGATION BAR                           */
+/* ========================================= */
+
+.modern-navbar {
+    background: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.modern-navbar .container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+}
+
+.modern-navbar .navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modern-navbar .navbar-brand::before {
+    content: "⚡";
+    font-size: 1.5rem;
+}
+
+.modern-nav-links {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 2rem;
+}
+
+.modern-nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    position: relative;
+}
+
+.modern-nav-link:hover,
+.modern-nav-link.active {
+    color: var(--accent-blue);
+}
+
+.modern-nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -0.75rem;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent-blue);
+    border-radius: 1px;
+}
+
+.modern-shortcuts-btn {
+    background: var(--tertiary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modern-shortcuts-btn:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* ========================================= */
+/* MAIN LAYOUT                              */
+/* ========================================= */
+
+.modern-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 1rem;
+    padding: 1rem;
+    height: calc(100vh - 70px);
+    max-width: 100%;
+}
+
+.modern-editor-panel {
+    background: var(--secondary-bg);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modern-output-panel {
+    background: var(--secondary-bg);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ========================================= */
+/* PANEL HEADERS                            */
+/* ========================================= */
+
+.modern-panel-header {
+    background: var(--tertiary-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modern-panel-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modern-panel-title::before {
+    content: "📝";
+    font-size: 1rem;
+}
+
+.modern-output-panel .modern-panel-title::before {
+    content: "🖥️";
+}
+
+.modern-btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ========================================= */
+/* MODERN BUTTONS                           */
+/* ========================================= */
+
+.modern-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.modern-btn-primary {
+    background: var(--accent-green);
+    color: white;
+}
+
+.modern-btn-primary:hover {
+    background: #00b359;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.modern-btn-secondary {
+    background: var(--tertiary-bg);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.modern-btn-secondary:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.modern-btn-blue {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.modern-btn-blue:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.modern-btn-purple {
+    background: var(--accent-purple);
+    color: white;
+}
+
+.modern-btn-purple:hover {
+    background: #7c3aed;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+/* ========================================= */
+/* CODE EDITOR                              */
+/* ========================================= */
+
+.modern-editor-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.CodeMirror {
+    height: 100% !important;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    background: var(--secondary-bg) !important;
+}
+
+.cm-s-dracula.CodeMirror {
+    background: var(--secondary-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+.cm-s-dracula .CodeMirror-gutters {
+    background: var(--tertiary-bg) !important;
+    border-right: 1px solid var(--border-color) !important;
+}
+
+.cm-s-dracula .CodeMirror-linenumber {
+    color: var(--text-muted) !important;
+}
+
+.cm-s-dracula .CodeMirror-cursor {
+    border-left: 2px solid var(--accent-blue) !important;
+}
+
+.cm-s-dracula .CodeMirror-selected {
+    background: rgba(61, 126, 255, 0.2) !important;
+}
+
+/* ========================================= */
+/* OUTPUT CONSOLE                           */
+/* ========================================= */
+
+.modern-output-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modern-output-area {
+    flex: 1;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 13px;
+    padding: 1rem;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    line-height: 1.4;
+    border: none;
+    resize: none;
+}
+
+.modern-output-area::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modern-output-area::-webkit-scrollbar-track {
+    background: var(--tertiary-bg);
+}
+
+.modern-output-area::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+.modern-output-area::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ========================================= */
+/* CONNECTION STATUS                        */
+/* ========================================= */
+
+.modern-connection-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--tertiary-bg);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.75rem;
+}
+
+.modern-status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success-color);
+    animation: pulse 2s infinite;
+}
+
+.modern-status-indicator.disconnected {
+    background: var(--error-color);
+    animation: none;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.modern-status-text {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* ========================================= */
+/* PROGRAM INPUT                            */
+/* ========================================= */
+
+.modern-input-section {
+    border-top: 1px solid var(--border-color);
+    background: var(--tertiary-bg);
+}
+
+.modern-input-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modern-input-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modern-input-status {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    background: var(--primary-bg);
+    color: var(--text-muted);
+}
+
+.modern-input-status.waiting {
+    background: var(--warning-color);
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.modern-input-container {
+    padding: 1rem;
+}
+
+.modern-input-field {
+    width: 100%;
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+    transition: border-color 0.2s ease;
+}
+
+.modern-input-field:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(61, 126, 255, 0.1);
+}
+
+.modern-input-field::placeholder {
+    color: var(--text-muted);
+}
+
+.modern-send-btn {
+    width: 100%;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modern-send-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.modern-send-btn:disabled {
+    background: var(--border-color);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========================================= */
+/* RESPONSIVE DESIGN                        */
+/* ========================================= */
+
+@media (max-width: 1024px) {
+    .modern-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        height: calc(100vh - 70px);
+    }
+
+    .modern-output-panel {
+        max-height: 40vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .modern-navbar .container-fluid {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .modern-nav-links {
+        gap: 1rem;
+    }
+
+    .modern-container {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .modern-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* ========================================= */
+/* EXAMPLES PAGE                            */
+/* ========================================= */
+
+.modern-examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.modern-example-card {
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modern-example-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-blue);
+}
+
+.modern-example-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.modern-example-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.modern-example-preview {
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    padding: 0.75rem;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    max-height: 150px;
+    overflow: hidden;
+    position: relative;
+}
+
+.modern-example-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(transparent, var(--primary-bg));
+}
+
+/* ========================================= */
+/* DOCUMENTATION PAGE                       */
+/* ========================================= */
+
+.modern-docs-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    height: calc(100vh - 70px);
+}
+
+.modern-docs-sidebar {
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.modern-docs-content {
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.modern-docs-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.modern-docs-nav li {
+    margin-bottom: 0.5rem;
+}
+
+.modern-docs-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    display: block;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.modern-docs-nav a:hover,
+.modern-docs-nav a.active {
+    background: var(--tertiary-bg);
+    color: var(--text-primary);
+}
+
+/* ========================================= */
+/* UTILITIES                                */
+/* ========================================= */
+
+.hidden {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}

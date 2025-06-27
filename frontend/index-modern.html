@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Online Compiler</title>
+
+    <!-- CodeMirror for code editor -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/theme/dracula.min.css">
+
+    <!-- Modern Design CSS -->
+    <link rel="stylesheet" href="css/modern.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Modern Navigation Bar -->
+    <nav class="modern-navbar">
+        <div class="container-fluid">
+            <a href="#" class="navbar-brand">Flex Online Compiler</a>
+
+            <ul class="modern-nav-links">
+                <li><a href="#compiler" class="modern-nav-link active" data-page="compiler">Compiler</a></li>
+                <li><a href="#examples" class="modern-nav-link" data-page="examples">Examples</a></li>
+                <li><a href="#documentation" class="modern-nav-link" data-page="documentation">Documentation</a></li>
+            </ul>
+
+            <button class="modern-shortcuts-btn" id="shortcuts-btn">
+                <span>⌨️</span>
+                Shortcuts
+            </button>
+        </div>
+    </nav>
+
+    <!-- Compiler Page (Main Interface) -->
+    <div id="compiler-page" class="page">
+        <div class="modern-container">
+            <!-- Code Editor Panel -->
+            <div class="modern-editor-panel">
+                <div class="modern-panel-header">
+                    <div class="modern-panel-title">Code Editor</div>
+                    <div class="modern-btn-group">
+                        <button id="run-button" class="modern-btn modern-btn-primary">
+                            <span>▶</span>
+                            Run
+                        </button>
+                        <button id="clear-button" class="modern-btn modern-btn-secondary">
+                            <span>🗑️</span>
+                            Clear
+                        </button>
+                        <button id="save-button" class="modern-btn modern-btn-blue">
+                            <span>💾</span>
+                            Save
+                        </button>
+                        <button id="share-button" class="modern-btn modern-btn-purple">
+                            <span>🔗</span>
+                            Share
+                        </button>
+                    </div>
+                </div>
+                <div class="modern-editor-container">
+                    <textarea id="code-editor" class="hidden">// Welcome to Flex Online Compiler
+// Try running this sample code:
+
+rakm x = 19
+y = 2
+z = x+y
+
+print("Sum of {x} and {y} is {z}")
+
+for (i = 1; i < 5; i++) {
+    print("Loop iteration: {i}")
+}</textarea>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="modern-output-panel">
+                <!-- Connection Status -->
+                <div class="modern-connection-status">
+                    <div class="modern-status-indicator" id="status-indicator"></div>
+                    <span class="modern-status-text" id="status-text">Connected</span>
+                </div>
+
+                <!-- Output Console Header -->
+                <div class="modern-panel-header">
+                    <div class="modern-panel-title">Output Console</div>
+                    <div class="modern-btn-group">
+                        <span class="modern-status-badge" id="execution-status">Idle</span>
+                        <button id="clear-output-button" class="modern-btn modern-btn-secondary">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output Area -->
+                <div class="modern-output-container">
+                    <div class="modern-output-area" id="output-area">WebSocket connected</div>
+                </div>
+
+                <!-- Program Input Section -->
+                <div class="modern-input-section">
+                    <div class="modern-input-header">
+                        <div class="modern-input-title">Program Input</div>
+                        <div class="modern-input-status" id="input-status">Not waiting for input</div>
+                    </div>
+                    <div class="modern-input-container">
+                        <input type="text" id="input-field" class="modern-input-field"
+                            placeholder="Enter input for scan()" disabled>
+                        <button id="send-input-button" class="modern-send-btn" disabled>
+                            <span>📤</span>
+                            Send
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Connection Status Toast -->
+                <div class="modern-connection-toast" id="connection-toast">
+                    <div class="modern-status-indicator"></div>
+                    <span>WebSocket connection established</span>
+                    <button onclick="this.parentElement.style.display='none'">✕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Examples Page -->
+    <div id="examples-page" class="page hidden">
+        <div style="padding: 1rem;">
+            <div class="modern-panel-header" style="margin-bottom: 1rem; border-radius: 0.5rem;">
+                <div class="modern-panel-title">
+                    <span>📚</span>
+                    Flex Code Examples
+                    <span
+                        style="background: var(--accent-green); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; margin-left: 0.5rem;">Live
+                        from GitHub</span>
+                </div>
+            </div>
+            <div class="modern-examples-grid" id="examples-container">
+                <div
+                    style="display: flex; justify-content: center; align-items: center; height: 200px; color: var(--text-secondary);">
+                    <div style="text-align: center;">
+                        <div
+                            style="width: 32px; height: 32px; border: 3px solid var(--accent-blue); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;">
+                        </div>
+                        Loading examples...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation Page -->
+    <div id="documentation-page" class="page hidden">
+        <div class="modern-docs-container">
+            <div class="modern-docs-sidebar">
+                <div class="modern-panel-title" style="margin-bottom: 1rem;">
+                    <span>📖</span>
+                    Documentation
+                    <span
+                        style="background: var(--accent-green); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; display: block; margin-top: 0.5rem;">Live
+                        from GitHub</span>
+                </div>
+                <ul class="modern-docs-nav" id="documentation-links">
+                    <li
+                        style="display: flex; justify-content: center; align-items: center; height: 100px; color: var(--text-secondary);">
+                        <div style="text-align: center;">
+                            <div
+                                style="width: 24px; height: 24px; border: 2px solid var(--accent-blue); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 0.5rem;">
+                            </div>
+                            Loading docs...
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modern-docs-content">
+                <div id="doc-content">
+                    <h2>Welcome to Flex Documentation</h2>
+                    <p style="color: var(--text-secondary);">Select a topic from the sidebar to view the documentation.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Panel -->
+    <div id="shortcuts-panel" class="shortcuts-panel">
+        <div class="shortcuts-header">
+            <h5 style="margin: 0; color: var(--text-primary);">Keyboard Shortcuts</h5>
+            <button type="button" class="modern-btn modern-btn-secondary" style="padding: 0.25rem 0.5rem;"
+                id="shortcuts-close">✕</button>
+        </div>
+        <div class="shortcuts-body">
+            <div style="background: var(--primary-bg); border-radius: 0.375rem; padding: 1rem;">
+                <table style="width: 100%; color: var(--text-primary);">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border-color);">
+                            <th style="padding: 0.5rem; text-align: left; color: var(--text-secondary);">Shortcut</th>
+                            <th style="padding: 0.5rem; text-align: left; color: var(--text-secondary);">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 0.5rem;">
+                                <span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">Enter</span>
+                            </td>
+                            <td style="padding: 0.5rem;">Run code</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">
+                                <span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">S</span>
+                            </td>
+                            <td style="padding: 0.5rem;">Save code</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">
+                                <span class="shortcut-key">Tab</span>
+                            </td>
+                            <td style="padding: 0.5rem;">Insert 4 spaces</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">
+                                <span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">/</span>
+                            </td>
+                            <td style="padding: 0.5rem;">Toggle comment</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Animation Styles -->
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modern-status-badge {
+            background: var(--tertiary-bg);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .modern-status-badge.running {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .modern-status-badge.error {
+            background: var(--error-color);
+            color: white;
+        }
+
+        .modern-connection-toast {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: var(--success-color);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        .modern-connection-toast button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .modern-connection-toast button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .shortcut-key {
+            background: var(--tertiary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page:not(.hidden) {
+            display: block;
+        }
+    </style>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="js/flex-mode.js"></script>
+    <script src="js/modern.js"></script>
+</body>
+
+</html>
