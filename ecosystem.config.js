@@ -25,7 +25,6 @@ module.exports = {
     restart_delay: 2000,
     node_args: '--max-old-space-size=768 --optimize-for-size',
     kill_timeout: 5000,
-    wait_ready: true,
     listen_timeout: 30000,
     pmx: false,
     min_uptime: '10s',
