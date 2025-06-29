@@ -5,24 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚡ Flex Online Compiler - Ultra Modern</title>
-
+    
     <!-- CodeMirror for code editor -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.3/theme/dracula.min.css">
-
+    
     <!-- Enhanced Ultra-Modern Design CSS -->
     <link rel="stylesheet" href="css/enhanced.css">
-
+    
     <!-- Modern Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <!-- Favicon -->
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 
 <body>
@@ -30,13 +27,13 @@
     <nav class="enhanced-navbar">
         <div class="container-fluid">
             <a href="#" class="enhanced-brand">Flex Online Compiler</a>
-
+            
             <ul class="enhanced-nav-links">
                 <li><a href="#compiler" class="enhanced-nav-link active" data-page="compiler">Compiler</a></li>
                 <li><a href="#examples" class="enhanced-nav-link" data-page="examples">Examples</a></li>
                 <li><a href="#documentation" class="enhanced-nav-link" data-page="documentation">Documentation</a></li>
             </ul>
-
+            
             <button class="enhanced-shortcuts-btn" id="shortcuts-btn">
                 <span>⌨️</span>
                 Shortcuts
@@ -116,8 +113,7 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
                 <!-- Output Area -->
                 <div class="enhanced-output-container">
                     <div class="enhanced-output-area" id="output-area">
-                        <div
-                            style="color: var(--neon-blue); font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="color: var(--neon-blue); font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
                             <span>⚡</span>
                             Welcome to Ultra-Modern Flex Online Compiler
                         </div>
@@ -134,8 +130,13 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
                         <div class="enhanced-input-status" id="input-status">Not waiting for input</div>
                     </div>
                     <div class="enhanced-input-container">
-                        <input type="text" id="input-field" class="enhanced-input-field"
-                            placeholder="✨ Enter input for scan() function..." disabled>
+                        <input 
+                            type="text" 
+                            id="input-field" 
+                            class="enhanced-input-field" 
+                            placeholder="✨ Enter input for scan() function..."
+                            disabled
+                        >
                         <button id="send-input-button" class="enhanced-send-btn" disabled>
                             <span>📤</span>
                             Send Input
@@ -154,16 +155,12 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
                     <div class="enhanced-panel-title">
                         <span>📚</span>
                         Flex Code Examples
-                        <span
-                            style="background: var(--gradient-success); color: white; padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.7rem; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Live
-                            from GitHub</span>
+                        <span style="background: var(--gradient-success); color: white; padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.7rem; margin-left: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Live from GitHub</span>
                     </div>
                 </div>
                 <div style="padding: 2rem;">
-                    <div id="examples-container"
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-                        <div
-                            style="display: flex; justify-content: center; align-items: center; height: 200px; color: var(--text-secondary); grid-column: 1 / -1;">
+                    <div id="examples-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+                        <div style="display: flex; justify-content: center; align-items: center; height: 200px; color: var(--text-secondary); grid-column: 1 / -1;">
                             <div style="text-align: center;">
                                 <div class="enhanced-loading" style="margin: 0 auto 1rem;"></div>
                                 <div style="font-weight: 500;">Loading enhanced examples...</div>
@@ -188,8 +185,7 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
                     </div>
                     <div style="padding: 1.5rem; overflow-y: auto;">
                         <ul id="documentation-links" style="list-style: none; padding: 0; margin: 0;">
-                            <li
-                                style="display: flex; justify-content: center; align-items: center; height: 100px; color: var(--text-secondary);">
+                            <li style="display: flex; justify-content: center; align-items: center; height: 100px; color: var(--text-secondary);">
                                 <div style="text-align: center;">
                                     <div class="enhanced-loading" style="margin: 0 auto 0.5rem;"></div>
                                     <div style="font-size: 0.9rem;">Loading docs...</div>
@@ -204,14 +200,12 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
                     </div>
                     <div style="padding: 2rem; overflow-y: auto;">
                         <div id="doc-content">
-                            <h2 style="color: var(--text-primary); margin-top: 0;">Welcome to Enhanced Flex
-                                Documentation</h2>
+                            <h2 style="color: var(--text-primary); margin-top: 0;">Welcome to Enhanced Flex Documentation</h2>
                             <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.6;">
-                                Select a topic from the sidebar to view the documentation.
+                                Select a topic from the sidebar to view the documentation. 
                                 Experience the future of programming with our enhanced interface.
                             </p>
-                            <div
-                                style="background: var(--bg-glass); border: var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
+                            <div style="background: var(--bg-glass); border: var(--glass-border); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
                                 <h3 style="color: var(--neon-blue); margin-top: 0;">✨ Enhanced Features</h3>
                                 <ul style="color: var(--text-secondary); line-height: 1.8;">
                                     <li>🎨 Glassmorphism design with modern aesthetics</li>
@@ -229,63 +223,48 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
     </div>
 
     <!-- Enhanced Keyboard Shortcuts Panel -->
-    <div id="shortcuts-panel" class="shortcuts-panel"
-        style="background: var(--bg-glass); backdrop-filter: var(--glass-backdrop); border: var(--glass-border); border-radius: 16px; box-shadow: var(--shadow-strong);">
+    <div id="shortcuts-panel" class="shortcuts-panel" style="background: var(--bg-glass); backdrop-filter: var(--glass-backdrop); border: var(--glass-border); border-radius: 16px; box-shadow: var(--shadow-strong);">
         <div class="shortcuts-header" style="padding: 1.5rem; border-bottom: var(--glass-border);">
-            <h5 style="margin: 0; color: var(--text-primary); font-weight: 600; font-size: 1.1rem;">⌨️ Keyboard
-                Shortcuts</h5>
-            <button type="button" class="enhanced-btn enhanced-btn-secondary"
-                style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" id="shortcuts-close">✕</button>
+            <h5 style="margin: 0; color: var(--text-primary); font-weight: 600; font-size: 1.1rem;">⌨️ Keyboard Shortcuts</h5>
+            <button type="button" class="enhanced-btn enhanced-btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" id="shortcuts-close">✕</button>
         </div>
         <div class="shortcuts-body" style="padding: 1.5rem;">
-            <div
-                style="background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: var(--glass-border);">
+            <div style="background: var(--bg-primary); border-radius: 12px; padding: 1.5rem; border: var(--glass-border);">
                 <table style="width: 100%; color: var(--text-primary);">
                     <thead>
                         <tr style="border-bottom: 1px solid var(--glass-border);">
-                            <th
-                                style="padding: 0.75rem; text-align: left; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem;">
-                                Shortcut</th>
-                            <th
-                                style="padding: 0.75rem; text-align: left; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem;">
-                                Action</th>
+                            <th style="padding: 0.75rem; text-align: left; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem;">Shortcut</th>
+                            <th style="padding: 0.75rem; text-align: left; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td style="padding: 0.75rem;">
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
                                 <span style="color: var(--text-muted);">+</span>
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">Enter</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">Enter</span>
                             </td>
                             <td style="padding: 0.75rem; color: var(--text-secondary);">Run code</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem;">
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
                                 <span style="color: var(--text-muted);">+</span>
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">S</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">S</span>
                             </td>
                             <td style="padding: 0.75rem; color: var(--text-secondary);">Save code</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem;">
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary);">Tab</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary);">Tab</span>
                             </td>
                             <td style="padding: 0.75rem; color: var(--text-secondary);">Insert 4 spaces</td>
                         </tr>
                         <tr>
                             <td style="padding: 0.75rem;">
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-right: 0.25rem;">Ctrl</span>
                                 <span style="color: var(--text-muted);">+</span>
-                                <span
-                                    style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">/</span>
+                                <span style="background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 0.3rem 0.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-primary); margin-left: 0.25rem;">/</span>
                             </td>
                             <td style="padding: 0.75rem; color: var(--text-secondary);">Toggle comment</td>
                         </tr>
@@ -296,8 +275,7 @@ print("Hello, {name}! Welcome to Flex!")</textarea>
     </div>
 
     <!-- Enhanced Notification Container -->
-    <div id="notification-container"
-        style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10000; pointer-events: none;">
+    <div id="notification-container" style="position: fixed; top: 1.5rem; right: 1.5rem; z-index: 10000; pointer-events: none;">
     </div>
 
     <!-- Scripts -->
